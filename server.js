@@ -86,9 +86,9 @@ hbs.registerHelper('apps', (list) => {
     var out = '';
     for (var item in titleList) {
         if (titleList[item][2] === 'Discount 0%') {
-            out = out + "<div class='game shadow'><p>" + titleList[item][0] + "</p><p>" + titleList[item][1] + "</p><p>" + titleList[item][2] + "</p></div>";
+            out = out + "<div class='game shadow'><p>" + titleList[item][0] + "</p><p>" + titleList[item][1] + "</p><p>" + titleList[item][2] + "</p><div id='deleteButton'>x</div></div>";
         } else {
-            out = out + "<div class='game_sale shadow'><p>" + titleList[item][0] + "</p><p>" + titleList[item][1] + "</p><p>" + titleList[item][2] + "</p></div>";
+            out = out + "<div class='game_sale shadow'><p>" + titleList[item][0] + "</p><p>" + titleList[item][1] + "</p><p>" + titleList[item][2] + "</p><div id='deleteButton'>x</div></div>";
         }
     }
     return out;
@@ -496,6 +496,14 @@ var game_loop = (queryResult) => {
         resolve(returnList);
     })
 }
+
+//Alex esentially wants this to happen if deleteButton was in an .html file
+//var deleteButton = document.getElementById("deleteButton");
+//deleteButton.addEventListener("mouseover", function{
+    //deleteButton.style.backgroundColor = "red";
+    //deleteButton.style.boxShadow = "2px 2px 4px 4px #555";
+    //deleteButton.style.cursor = "pointer";
+//});
 
 // Aldrich Huang - Test Commit
 // Robert Janzen - Commit for Aldrich
