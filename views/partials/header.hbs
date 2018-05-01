@@ -1,8 +1,12 @@
 <header class="header shadow">
-  <div id="logo">
-    <img id="steam" src='game.png'>
-  </div>
-  <div id="title">Wishlister</div>
+  <a href='http://localhost:8080/' class='home'>
+    <div id="logo" >
+      <img id="steam" src='game.png'>
+      <div id="title">Wishlister</div>
+    </div>
+  </a>
+
+
   {{#if loggedIn}}
     {{> loggedin_message}}
   {{else}}
