@@ -137,7 +137,8 @@ app.post('/', (request, response) => {
                     price: `Current Price: ${current_price}`,
                     discount: `Discount ${disct_percentage}%`,
                     displayDetails: true,
-                    details: 'Search Results'
+                    gameThumb: `<img id=\"gameThumb\" class=\"shadow\" src=\"${result.header_image}\" />`,
+                    details: 'Game Details'
                 });
             }).catch((error) => {
                 console.log(error);

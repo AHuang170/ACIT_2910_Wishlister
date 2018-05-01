@@ -144,6 +144,38 @@ var insert_wishlist = (uid, appid) => {
 }
 
 /**
+ * check if the the user name exist in database table
+ * @alias module:./sql_db.check_user_existence
+ * @param input_user_name - name of the new user
+ * @param resultName - column label of the query result
+ * @returns {Promise} Promise to query from the database
+ */
+var delete_from_wishlist = (uid, appid) => {
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} A list of the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+
+    var deleteQuery = `DELETE FROM wishlist WHERE (uid=${uid} AND appid=${appid})`;
+    /**
+     * @param addquery - Sql command used to insert into wishlist table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(deleteQuery, function(err, result, fields) {
+        if(err){
+          reject(err);
+        }else{
+          resolve(result);
+        }
+    });
+  });
+}
+
+/**
  * fetch user details from users table
  * @alias module:./sql_db.fetch_user_detail
  * @param input_name - name of the user
