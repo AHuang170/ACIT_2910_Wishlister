@@ -47,11 +47,22 @@ header {
 	z-index:10;
 }
 
+#logo:hover{
+	cursor:pointer;
+}
+
 #steam {
 	width:60px;
 	margin-left:25px;
 	padding-top:5px;
 	margin-bottom:5px;
+	position: relative;
+	top: -15px;
+}
+
+.home{
+	position: relative;
+	top: -5px;
 }
 
 #title {
@@ -59,7 +70,6 @@ header {
 	display:inline-block;
 	font-size:2.7em;
 	font-weight:bold;
-	width:260px;
 	z-index:2;
 	padding:5px;
 }
