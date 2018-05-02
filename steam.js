@@ -73,7 +73,7 @@ var game_loop = (queryResult) => {
     })
 }
 
-var process_object = (steam_result) => {
+function process_object(steam_result) {
   var initial_price = parseInt(steam_result.price_overview.initial);
   var disct_percentage = parseInt(steam_result.price_overview.discount_percent);
   var current_price = calculate_price(initial_price, disct_percentage);
@@ -89,5 +89,5 @@ var calculate_price = (initial_price, disct_percentage) => {
 }
 
 module.exports = {
-  steam, game_loop
+  steam, game_loop, process_object
 }
