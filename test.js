@@ -1,23 +1,41 @@
 var steam = require("./steam")
 var sql = require("./sql_db.js")
 
-test_obj = {
-  price_overview: {
-    initial: "10",
-    discount_percent: "50%"
-  },
-  name: "My Game",
-  header_image: "https://steamcdn-a.akamaihd.net/steam/apps/313730/header.jpg?t=1478566913"
-}
+beforeAll(() => {
+    return steam.steam(590380).then((result) => {
+        steam_object = result;
+        return sql.fetch_wishlist(60);
+    }).then((result) => {
+        db_list = result
 
-describe("David's test", () => {
-  test("a valid object", ()=>{
-  expect(steam.process_object(test_obj)).
-  toContain("My Game")
-  });
-});
+        mock_steam_obj =
+        {
+            "name": "Into the Breach",
+            "price_overview": {
+                "initial": 1749,
+                "discount_percent": 0
+            },
+            "header_image": "https://steamcdn-a.akamaihd.net/steam/apps/590380/header.jpg?t=1519989363",
+            "steam_appid": 590380
+        }
+    })
+})
+
+describe("Steam Tests", () => {
+  test("Receive JSON object from Steam API", () => {
+      expect(steam_object.type).
+      toBe("game")
+
+  }),
+  test("Process steam object - Game Title", () => {
+      expect(steam.process_object(mock_steam_obj)[0]).
+      toBe("Into the Breach")
+  })
+})
 
 describe('SQL DB Tests', () => {
-  test("Connect to RDS MySQL database", () => {
-  });
-});
+    test("Fetch Wishlist from MySQL Database", () => {
+        expect(db_list[1].appid).
+        toBe(376520)
+    })
+})

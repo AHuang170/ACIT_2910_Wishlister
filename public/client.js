@@ -1,4 +1,3 @@
-//free to code
 var logWindow = document.getElementById('logWindow');
 
 document.getElementById('login-header').addEventListener('click',function(){

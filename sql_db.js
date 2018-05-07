@@ -166,9 +166,9 @@ var delete_from_wishlist = (uid, appid) => {
      * @param {requestCallback} fields - Column labels that's not used
      */
     connection.query(deleteQuery, function(err, result, fields) {
-        if(err){
+        if (err) {
           reject(err);
-        }else{
+        } else {
           resolve(result);
         }
     });
@@ -212,9 +212,10 @@ var fetch_user_detail = (input_name) => {
  * @alias module:./sql_db.insert_user
  * @param input_user_name - name of the new user
  * @param hash - hashed password by the user
+ * @param email - email entered by the user
  * @returns {Promise} Promise to query from the database
  */
-var insert_user = (input_user_name, hash) => {
+var insert_user = (input_user_name, hash, input_user_email) => {
 
   /**
    * Promise to query from database
@@ -222,7 +223,7 @@ var insert_user = (input_user_name, hash) => {
    * @returns {Promise.reject} Returns the err variable
    */
   return new Promise ((resolve, reject) => {
-    var addQ = `INSERT INTO users (uid, username, password) VALUES (NULL, '${input_user_name}', '${hash}');`;
+    var addQ = `INSERT INTO users (uid, username, password, email) VALUES (NULL, '${input_user_name}', '${hash}', '${input_user_email}');`;
 
     /**
      * @param addq - Sql command to insert into users table
@@ -277,6 +278,64 @@ var check_user_existence = (input_user_name, resultName) => {
   })
 }
 
+var check_email_existence = (input_user_email, resultName) => {
+
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var emailSearch = `SELECT count(*) AS ${resultName} FROM users WHERE email = '${input_user_email}'`;
+    var queryResult = false;
+
+    /**
+     * @param nameQuery - Sql command to query users table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} result - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(emailSearch, function(err, result, fields) {
+        if (err) {
+            reject(err);
+        }
+        if (result[0][resultName] == 1) {
+            queryResult = true;
+        }
+        resolve(queryResult);
+    });
+  })
+}
+
+var check_email_dupes = (input_user_email, resultName) => {
+
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var emailSearch = `SELECT count(*) AS ${resultName} FROM users WHERE email = '${input_user_email}'`;
+    var queryResult = false;
+
+    /**
+     * @param nameQuery - Sql command to query users table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} result - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(emailSearch, function(err, result, fields) {
+        if (err) {
+            reject(err);
+        }
+        if (result[0][resultName] == 1) {
+            queryResult = true;
+        }
+        resolve(queryResult);
+    });
+  })
+}
+
 module.exports = {
-  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence
+  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence,delete_from_wishlist
 }

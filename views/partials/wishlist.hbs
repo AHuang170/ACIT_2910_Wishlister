@@ -4,4 +4,36 @@
   {{#apps this}}
     {{gamelist}}
   {{/apps}}
+    <script>
+        function deleteMessage(api) {
+            var yesNo = document.createElement("div"),
+                text = document.createElement("p"),
+                a1 = document.createElement("a"),
+                yes = document.createElement("button"),
+                a2 = document.createElement("a"),
+                no = document.createElement("button");
+        
+            document.getElementById(api).appendChild(yesNo);
+            yesNo.appendChild(text);
+            yesNo.appendChild(a1);
+            a1.appendChild(yes);
+            yesNo.appendChild(a2);
+            a2.appendChild(no);
+        
+            yesNo.className = "overWish shadow";
+        
+            text.innerHTML = "Are you sure you want to remove this game from your wishlist?";
+            text.className = "textSMS";
+        
+            yes.className = "btn btn-outline-secondary";
+            a1.href="/removeFromWishlist?a="+api;
+            yes.innerHTML = "Yes";
+            yes.id = "yes-btn";
+        
+            no.className = "btn btn-outline-secondary";
+            a2.href="/";
+            no.innerHTML = "No";
+            no.id = "no-btn";
+        }
+    </script>
 </div>
