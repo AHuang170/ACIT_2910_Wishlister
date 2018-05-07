@@ -332,12 +332,19 @@ app.get('/accCreate', (request, response) => {
     });
 });
 
-// Load a new page where the user can recover an email
+// Load a new page where the user can recover their password via an email
 app.get('/RecoverPassword', (request, response) => {
     response.render('passwordRecovery.hbs', {
 
     });
 });
+
+// Load a new page from the emailed link where a user can enter their new password
+app.get('/passwordRecoveryEntry', (request, response) => {
+    response.render('passwordRecoveryEntry.hbs', {
+    });
+});
+
 
 // Accepts the user's email, name, and password. Performs server side checks for
 // password quality
@@ -353,6 +360,7 @@ app.post('/createUser', (request, response) => {
     var pw_mismatch = check_matching_passwords(input_user_pass, input_dupe_pass);
     var resultName = 'numName';
     var invalidEmail = validateEmail(input_user_email);
+    var emailDBStatus = sql_db_function.check_email_existence;
 
     sql_db_function.check_user_existence(input_user_name, resultName).then((result) => {
         if (weak_pass || weak_pass || short_name || pass_space || containsSpace || pw_mismatch || result || invalidEmail) {
@@ -364,6 +372,7 @@ app.post('/createUser', (request, response) => {
                 weakPass: weak_pass,
                 spacePass: pass_space,
                 invalidEmailError: invalidEmail,
+                emailNotFound: emailDBStatus,
                 noLogIn: true
             });
         } else {

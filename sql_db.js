@@ -287,7 +287,7 @@ var check_email_existence = (input_user_email, resultName) => {
    */
   return new Promise ((resolve, reject) => {
     var emailSearch = `SELECT count(*) AS ${resultName} FROM users WHERE email = '${input_user_email}'`;
-    var queryResult = false;
+    var queryResult = 0;
 
     /**
      * @param nameQuery - Sql command to query users table
@@ -300,36 +300,7 @@ var check_email_existence = (input_user_email, resultName) => {
             reject(err);
         }
         if (result[0][resultName] == 1) {
-            queryResult = true;
-        }
-        resolve(queryResult);
-    });
-  })
-}
-
-var check_email_dupes = (input_user_email, resultName) => {
-
-  /**
-   * Promise to query from database
-   * @returns {Promise.resolve} Returns the query results
-   * @returns {Promise.reject} Returns the err variable
-   */
-  return new Promise ((resolve, reject) => {
-    var emailSearch = `SELECT count(*) AS ${resultName} FROM users WHERE email = '${input_user_email}'`;
-    var queryResult = false;
-
-    /**
-     * @param nameQuery - Sql command to query users table
-     * @param {requestCallback} err - error message from Database
-     * @param {requestCallback} result - result of the query
-     * @param {requestCallback} fields - Column labels that's not used
-     */
-    connection.query(emailSearch, function(err, result, fields) {
-        if (err) {
-            reject(err);
-        }
-        if (result[0][resultName] == 1) {
-            queryResult = true;
+            queryResult = 1;
         }
         resolve(queryResult);
     });
