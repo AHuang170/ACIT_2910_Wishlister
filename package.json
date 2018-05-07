@@ -4,7 +4,7 @@
   "description": "Web Dev project",
   "main": "server.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --forceExit --coverage"
   },
   "repository": {
     "type": "git",

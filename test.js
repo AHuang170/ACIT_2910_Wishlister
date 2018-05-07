@@ -21,6 +21,10 @@ beforeAll(() => {
     })
 })
 
+afterAll(() => {
+    sql.connection.end()
+})
+
 describe("Steam Tests", () => {
   test("Receive JSON object from Steam API", () => {
       expect(steam_object.type).
