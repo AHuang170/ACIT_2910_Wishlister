@@ -355,8 +355,10 @@ app.post('/createUser', (request, response) => {
     var pw_mismatch = check_matching_passwords(input_user_pass, input_dupe_pass);
     var resultName = 'numName';
     var invalidEmail = validateEmail(input_user_email);
-    var emailName = 'emailName'
-    var emailDBStatus = sql_db_function.check_email_existence(input_user_email, emailName);
+    var emailName = 'emailName';
+    var emailDBStatus = 'temp';
+
+    sql_db_function.check_email_existence(input_user_email, emailName).then((status) => {emailDBStatus = status});
 
     sql_db_function.check_user_existence(input_user_name, resultName).then((result) => {
         if (weak_pass || weak_pass || short_name || pass_space || containsSpace || pw_mismatch || result || invalidEmail || emailDBStatus) {

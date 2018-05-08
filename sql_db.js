@@ -304,6 +304,7 @@ var check_email_existence = (input_user_email, emailName) => {
             queryResult = true;
 
         }
+
         resolve(queryResult);
     });
   })
@@ -333,7 +334,7 @@ var get_uid_from_email = (input_user_email) => {
 
 
         queryResult = result[0]['uid'];
-        
+
         resolve(queryResult);
     });
   })
