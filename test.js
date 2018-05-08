@@ -63,8 +63,24 @@ describe('GOG Tests', () => {
     }),
     test("Return empty list for unmatched name", () => {
         return gog.gog_api("afdsafdsaf").then((result) => {
-            expect(_.isArray(   result)).
-            toBe([])
+            expect(result).
+            toHaveLength(0)
+        })
+    }),
+    test("Return just the specified game object", () => {
+        return gog.gog_api("The Witcher: Enhanced Edition").then((result) => {
+            return gog.isolate_game_obj("The Witcher: Enhanced Edition", result)
+        }).then((game_obj) => {
+            expect(game_obj.title).
+            toBe("The Witcher: Enhanced Edition")
+        })
+    }),
+    test("Return undefined for unmatched names", () => {
+        return gog.gog_api("afdsafdsaf").then((result) => {
+            return gog.isolate_game_obj("afdsafdsaf", result)
+        }).then((game_obj) => {
+            expect(game_obj).
+            toBe(undefined)
         })
     })
 })
