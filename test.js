@@ -1,5 +1,8 @@
 var steam = require("./steam")
 var sql = require("./sql_db.js")
+var gog = require("./gog.js")
+
+const _ = require('lodash');
 
 beforeAll(() => {
     return steam.steam(590380).then((result) => {
@@ -47,5 +50,21 @@ describe('SQL DB Tests', () => {
     test("Fetch Wishlist from MySQL Database", () => {
         expect(db_list[1].appid).
         toBe(376520)
+    })
+})
+
+describe('GOG Tests', () => {
+    test("Receive JSON object from GOG API", () => {
+        return gog.gog_api("Witcher").then((result) => {
+            expect(_.isArray(result)).
+            toBeTruthy()
+        })
+
+    }),
+    test("Return empty list for unmatched name", () => {
+        return gog.gog_api("afdsafdsaf").then((result) => {
+            expect(_.isArray(result)).
+            toBe([])
+        })
     })
 })
