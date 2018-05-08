@@ -64,9 +64,6 @@ describe('GOG Tests', () => {
     test("Return empty list for unmatched name", () => {
         return gog.gog_api("afdsafdsaf").then((result) => {
             expect(result).
-<<<<<<< HEAD
-            toBe([])
-=======
             toHaveLength(0)
         })
     }),
@@ -84,7 +81,6 @@ describe('GOG Tests', () => {
         }).then((game_obj) => {
             expect(game_obj).
             toBe(undefined)
->>>>>>> upstream/master
         })
     })
 })
