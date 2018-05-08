@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1525725669959" clover="3.2.0">
-  <project timestamp="1525725669959" name="All files">
-    <metrics statements="119" coveredstatements="49" conditionals="32" coveredconditionals="5" methods="36" coveredmethods="10" elements="187" coveredelements="64" complexity="0" loc="119" ncloc="119" packages="1" files="3" classes="3">
-      <file name="config.js" path="C:\Users\rober\Documents\GitHub\Wishlister\config.js">
+<coverage generated="1525815145749" clover="3.2.0">
+  <project timestamp="1525815145749" name="All files">
+    <metrics statements="118" coveredstatements="49" conditionals="30" coveredconditionals="5" methods="36" coveredmethods="10" elements="184" coveredelements="64" complexity="0" loc="118" ncloc="118" packages="1" files="3" classes="3">
+      <file name="config.js" path="C:\Users\tyler\Documents\CIT Level 1__5k term and Backup\Wishlister_On_PC\Wishlister\config.js">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
       </file>
-      <file name="sql_db.js" path="C:\Users\rober\Documents\GitHub\Wishlister\sql_db.js">
-        <metrics statements="85" coveredstatements="25" conditionals="28" coveredconditionals="3" methods="29" coveredmethods="5"/>
+      <file name="sql_db.js" path="C:\Users\tyler\Documents\CIT Level 1__5k term and Backup\Wishlister_On_PC\Wishlister\sql_db.js">
+        <metrics statements="84" coveredstatements="25" conditionals="26" coveredconditionals="3" methods="29" coveredmethods="5"/>
         <line num="9" count="1" type="stmt"/>
         <line num="14" count="1" type="stmt"/>
         <line num="15" count="1" type="stmt"/>
@@ -81,22 +81,21 @@
         <line num="298" count="0" type="stmt"/>
         <line num="299" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="300" count="0" type="stmt"/>
-        <line num="302" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="303" count="0" type="stmt"/>
-        <line num="305" count="0" type="stmt"/>
-        <line num="310" count="1" type="stmt"/>
-        <line num="317" count="0" type="stmt"/>
-        <line num="318" count="0" type="stmt"/>
+        <line num="303" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="304" count="0" type="stmt"/>
+        <line num="307" count="0" type="stmt"/>
+        <line num="312" count="1" type="stmt"/>
         <line num="319" count="0" type="stmt"/>
-        <line num="327" count="0" type="stmt"/>
-        <line num="328" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="320" count="0" type="stmt"/>
+        <line num="321" count="0" type="stmt"/>
         <line num="329" count="0" type="stmt"/>
-        <line num="331" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="332" count="0" type="stmt"/>
-        <line num="334" count="0" type="stmt"/>
-        <line num="339" count="1" type="stmt"/>
+        <line num="330" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="331" count="0" type="stmt"/>
+        <line num="335" count="0" type="stmt"/>
+        <line num="337" count="0" type="stmt"/>
+        <line num="342" count="1" type="stmt"/>
       </file>
-      <file name="steam.js" path="C:\Users\rober\Documents\GitHub\Wishlister\steam.js">
+      <file name="steam.js" path="C:\Users\tyler\Documents\CIT Level 1__5k term and Backup\Wishlister_On_PC\Wishlister\steam.js">
         <metrics statements="31" coveredstatements="21" conditionals="4" coveredconditionals="2" methods="7" coveredmethods="5"/>
         <line num="9" count="1" type="stmt"/>
         <line num="17" count="1" type="stmt"/>

@@ -20,14 +20,14 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">29.07% </span>
+        <span class="strong">29.41% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>25/86</span>
+        <span class='fraction'>25/85</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">10.71% </span>
+        <span class="strong">11.54% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>3/28</span>
+        <span class='fraction'>3/26</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">17.24% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>5/29</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">29.41% </span>
+        <span class="strong">29.76% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>25/85</span>
+        <span class='fraction'>25/84</span>
       </div>
     </div>
     <p class="quiet">
@@ -387,7 +387,10 @@
 <a name='L339'></a><a href='#L339'>339</a>
 <a name='L340'></a><a href='#L340'>340</a>
 <a name='L341'></a><a href='#L341'>341</a>
-<a name='L342'></a><a href='#L342'>342</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L342'></a><a href='#L342'>342</a>
+<a name='L343'></a><a href='#L343'>343</a>
+<a name='L344'></a><a href='#L344'>344</a>
+<a name='L345'></a><a href='#L345'>345</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -688,8 +691,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -717,7 +722,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1008,7 +1014,7 @@ var check_user_existence = <span class="fstat-no" title="function not covered" >
   })
 }
 &nbsp;
-var check_email_existence = <span class="fstat-no" title="function not covered" >(i</span>nput_user_email, resultName) =&gt; {
+var check_email_existence = <span class="fstat-no" title="function not covered" >(i</span>nput_user_email, emailName) =&gt; {
 &nbsp;
   /**
    * Promise to query from database
@@ -1016,7 +1022,7 @@ var check_email_existence = <span class="fstat-no" title="function not covered" 
    * @returns {Promise.reject} Returns the err variable
    */
 <span class="cstat-no" title="statement not covered" >  return new Promise (<span class="fstat-no" title="function not covered" >(r</span>esolve, reject) =&gt; {</span>
-    var emailSearch = <span class="cstat-no" title="statement not covered" >`SELECT count(*) AS ${resultName} FROM users WHERE email = '${input_user_email}'`;</span>
+    var emailSearch = <span class="cstat-no" title="statement not covered" >`SELECT count(*) AS ${emailName} FROM users WHERE email = '${input_user_email}'`;</span>
     var queryResult = <span class="cstat-no" title="statement not covered" >false;</span>
 &nbsp;
     /**
@@ -1029,15 +1035,17 @@ var check_email_existence = <span class="fstat-no" title="function not covered" 
 <span class="cstat-no" title="statement not covered" >        if (err) {</span>
 <span class="cstat-no" title="statement not covered" >            reject(err);</span>
         }
-<span class="cstat-no" title="statement not covered" >        if (result[0][resultName] == 1) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (result[0][emailName] &gt;= 1) {</span>
 <span class="cstat-no" title="statement not covered" >            queryResult = true;</span>
+&nbsp;
         }
 <span class="cstat-no" title="statement not covered" >        resolve(queryResult);</span>
     });
   })
 }
 &nbsp;
-var check_email_dupes = <span class="fstat-no" title="function not covered" >(i</span>nput_user_email, resultName) =&gt; {
+var get_uid_from_email = <span class="fstat-no" title="function not covered" >(i</span>nput_user_email) =&gt; {
 &nbsp;
   /**
    * Promise to query from database
@@ -1045,8 +1053,8 @@ var check_email_dupes = <span class="fstat-no" title="function not covered" >(i<
    * @returns {Promise.reject} Returns the err variable
    */
 <span class="cstat-no" title="statement not covered" >  return new Promise (<span class="fstat-no" title="function not covered" >(r</span>esolve, reject) =&gt; {</span>
-    var emailSearch = <span class="cstat-no" title="statement not covered" >`SELECT count(*) AS ${resultName} FROM users WHERE email = '${input_user_email}'`;</span>
-    var queryResult = <span class="cstat-no" title="statement not covered" >false;</span>
+    var emailSearch = <span class="cstat-no" title="statement not covered" >`SELECT * FROM users WHERE email = '${input_user_email}'`;</span>
+    var queryResult = <span class="cstat-no" title="statement not covered" >'An error has occured..';</span>
 &nbsp;
     /**
      * @param nameQuery - Sql command to query users table
@@ -1058,16 +1066,17 @@ var check_email_dupes = <span class="fstat-no" title="function not covered" >(i<
 <span class="cstat-no" title="statement not covered" >        if (err) {</span>
 <span class="cstat-no" title="statement not covered" >            reject(err);</span>
         }
-<span class="cstat-no" title="statement not covered" >        if (result[0][resultName] == 1) {</span>
-<span class="cstat-no" title="statement not covered" >            queryResult = true;</span>
-        }
+&nbsp;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        queryResult = result[0]['uid'];</span>
+        
 <span class="cstat-no" title="statement not covered" >        resolve(queryResult);</span>
     });
   })
 }
 &nbsp;
 module.exports = {
-  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence,delete_from_wishlist
+  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence, delete_from_wishlist, get_uid_from_email
 }
 &nbsp;</pre></td></tr>
 </table></pre>
@@ -1075,7 +1084,7 @@ module.exports = {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Mon May 07 2018 13:41:09 GMT-0700 (Pacific Summer Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue May 08 2018 14:32:25 GMT-0700 (Pacific Daylight Time)
 </div>
 </div>
 <script src="prettify.js"></script>

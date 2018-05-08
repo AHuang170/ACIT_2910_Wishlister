@@ -278,7 +278,7 @@ var check_user_existence = (input_user_name, resultName) => {
   })
 }
 
-var check_email_existence = (input_user_email, resultName) => {
+var check_email_existence = (input_user_email, emailName) => {
 
   /**
    * Promise to query from database
@@ -286,8 +286,8 @@ var check_email_existence = (input_user_email, resultName) => {
    * @returns {Promise.reject} Returns the err variable
    */
   return new Promise ((resolve, reject) => {
-    var emailSearch = `SELECT count(*) AS ${resultName} FROM users WHERE email = '${input_user_email}'`;
-    var queryResult = 0;
+    var emailSearch = `SELECT count(*) AS ${emailName} FROM users WHERE email = '${input_user_email}'`;
+    var queryResult = false;
 
     /**
      * @param nameQuery - Sql command to query users table
@@ -299,14 +299,46 @@ var check_email_existence = (input_user_email, resultName) => {
         if (err) {
             reject(err);
         }
-        if (result[0][resultName] == 1) {
-            queryResult = 1;
+
+        if (result[0][emailName] >= 1) {
+            queryResult = true;
+
         }
         resolve(queryResult);
     });
   })
 }
 
+var get_uid_from_email = (input_user_email) => {
+
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var emailSearch = `SELECT * FROM users WHERE email = '${input_user_email}'`;
+    var queryResult = 'An error has occured..';
+
+    /**
+     * @param nameQuery - Sql command to query users table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} result - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(emailSearch, function(err, result, fields) {
+        if (err) {
+            reject(err);
+        }
+
+
+        queryResult = result[0]['uid'];
+        
+        resolve(queryResult);
+    });
+  })
+}
+
 module.exports = {
-  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence,delete_from_wishlist
+  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence, delete_from_wishlist, get_uid_from_email
 }
