@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Accounnt Created</title>
+		<title>Account Created</title>
 		<link href="css/bootstrap.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="css/style.css"></link>
 		<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
@@ -10,11 +10,15 @@
 		{{> header}}
 			<div class="wrapper">
 			<form action="/" method="get">
-				Account Created
-    			<input id="back-btn" class="btn btn-primary" type="submit" value="Back">
+					<div id='accCreatedMsg'> Account Successfully Created </div>
   			</form>
-
 			</div>
 			<br>
+		<script>
+
+		setTimeout(()=>{
+			location.href = "/";
+		}, 2000);
+		</script>
 	</body>
 </html>

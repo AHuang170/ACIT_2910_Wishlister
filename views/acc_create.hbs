@@ -13,6 +13,20 @@
 	    <div id='accFormContainer'>
 
 	      <form action="/createUser" method="post">
+
+					<div class='formRow'>
+						<div class='formRowLeft'>
+							<label class='formLabel' for="acc_email">Enter your email:</label>
+						</div>
+						<div class='formRowRight'>
+
+	            {{#if invalidEmailError}}
+	              <div class="formMessage">Email is not valid. Please re-enter email.</div>
+	            {{/if}}
+
+						<input class='formTextInput' type="text" name="acc_email">
+					</div>
+				</div>
 	        <div class='formRow'>
 
 	          <div class='formRowLeft'>
@@ -69,8 +83,10 @@
 						<input class='formTextInput' type="password" name="rpt_pass">
 					</div>
 
+
+
 	        <div class='formRow'>
-	          <input class='formSubmit' type="submit" value="Create Account">
+	          <input class='formSubmit' id='SubmitButton' type="submit" value="Create Account">
 	        </div>
 
 	      </form>

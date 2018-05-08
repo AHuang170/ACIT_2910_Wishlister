@@ -1,9 +1,9 @@
 <div id="loginForm">
     <div class="form-group">
 
-      <form action="/loginAuth" method="post">
+      <!--<form action="/loginAuth" method="post">-->
           <input id="login-header" class="btn btn-outline-secondary" type="submit" value="Login">
-      </form>
+      <!--</form>-->
     </div>
     {{#if emptyField}}
       <label id="failedText">Enter both username and password</label>
@@ -13,4 +13,7 @@
       {{/if}}
     {{/if}}
     <a id="create" href="/accCreate">Create new account</a>
+
+    <!-- <a id="create" href="/RecoverPassword">   | Recover Password via Email</a> -->
 </div>
+<script src="client.js"></script>

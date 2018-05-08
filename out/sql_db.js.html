@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: sql_db.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: sql_db.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Wishlist modules
+ * @module ./sql_db
+ */
+
+/**
+ * Request module installed with npm
+ */
+const request = require('request');
+
+/**
+ * Config.js file for the server
+ */
+const config = require('./config.js');
+var mysql = config.mysql;
+
+/**
+ * Function from config.js
+ * @class
+ */
+var connection = config.connection;
+
+/**
+ * Connect to the database
+ * @param {requestCallback} err - The return message if there is an error with the connection
+ */
+connection.connect(function(err) {
+    if (err) {
+        console.error('Database connection failed: ' + err.stack);
+        return;
+    }
+
+    console.log('Connected to database with id: ' + connection.threadId);
+});
+
+/**
+ * Sql command to select all rows from the table users
+ */
+var sql = 'SELECT * FROM users';
+
+/**
+ * Query from the database
+ * @param {string} sql - The sql command passed to the function based on user input
+ * @param {requestCallback} err - Return err if there is an error
+ * @param {requestCallback} rows - Return rows for a query
+ * @param {requestCallback} fields - Return fields for a query
+ */
+connection.query(sql, function(err, rows, fields) {
+    if (err) throw err
+});
+
+/**
+ * fetch Wishlist
+ * @alias module:./sql_db.fetch_wishlist
+ * @param target_id - The uid of the user, search from the wishlist table where the uid matches this value
+ * @returns {Promise} Promise to query from the database
+ */
+var fetch_wishlist = (target_id) => {
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} A list of the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise((resolve, reject) => {
+
+    var query = `SELECT * FROM wishlist WHERE uid = ${target_id}`;
+    /**
+     * @param query - Sql command used to query from the table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(query, function(err, queryResult, fields){
+      if(err){
+        reject(err);
+      }else{
+        resolve(queryResult);
+      }
+    });
+  });
+}
+
+/**
+ * fetch Wishlist duplicates
+ * @alias module:./sql_db.fetch_wishlist_duplicates
+ * @param uid - The uid of the user
+ * @param appid - The appid of the game
+ * @returns {Promise} Promise to query from the database
+ */
+var fetch_wishlist_duplicates = (uid, appid) => {
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} A list of the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var chkQuery = `SELECT * FROM wishlist WHERE uid = ${uid} AND appid = ${appid}`;
+    /**
+     * @param chkquery - Sql command used to query from the table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(chkQuery, function(err, result, fields) {
+        if(err){
+          reject(err);
+        }else{
+          resolve(result);
+        }
+    });
+  });
+}
+
+/**
+ * insert new game into wishlist table
+ * @alias module:./sql_db.insert_wishlist
+ * @param uid - The uid of the user
+ * @param appid - The appid of the game
+ * @returns {Promise} Promise to query from the database
+ */
+var insert_wishlist = (uid, appid) => {
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} A list of the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+
+    var addQuery = `INSERT INTO wishlist (uid, appid) VALUES (${uid}, ${appid})`;
+    /**
+     * @param addquery - Sql command used to insert into wishlist table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(addQuery, function(err, result, fields) {
+        if(err){
+          reject(err);
+        }else{
+          resolve(result);
+        }
+    });
+  });
+}
+
+/**
+ * fetch user details from users table
+ * @alias module:./sql_db.fetch_user_detail
+ * @param input_name - name of the user
+ * @returns {Promise} Promise to query from the database
+ */
+var fetch_user_detail = (input_name) => {
+
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} A list of the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var query = `SELECT * FROM users WHERE username = '${input_name}'`;
+
+    /**
+     * @param query - Sql command used to query from users table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(query, function(err, queryResult, fields){
+      if(err){
+        reject(err);
+      }else{
+        resolve(queryResult);
+      }
+    });
+  });
+}
+
+/**
+ * insert new user name and hashed password to users table
+ * @alias module:./sql_db.insert_user
+ * @param input_user_name - name of the new user
+ * @param hash - hashed password by the user
+ * @returns {Promise} Promise to query from the database
+ */
+var insert_user = (input_user_name, hash) => {
+
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var addQ = `INSERT INTO users (uid, username, password) VALUES (NULL, '${input_user_name}', '${hash}');`;
+
+    /**
+     * @param addq - Sql command to insert into users table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(addQ, function(err, result, fields) {
+        if (err){
+          reject(err);
+        }else{
+          resolve(true);
+        }
+    });
+  });
+}
+
+/**
+ * check if the the user name exist in database table
+ * @alias module:./sql_db.check_user_existence
+ * @param input_user_name - name of the new user
+ * @param resultName - column label of the query result
+ * @returns {Promise} Promise to query from the database
+ */
+var check_user_existence = (input_user_name, resultName) => {
+
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var nameQuery = `SELECT count(*) AS ${resultName} FROM users WHERE username = '${input_user_name}'`;
+    var queryResult = false;
+
+    /**
+     * @param nameQuery - Sql command to query users table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} result - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(nameQuery, function(err, result, fields) {
+        if (err) {
+            reject(err);
+        }
+        if (result[0][resultName] != 0) {
+            queryResult = true;
+        }
+        resolve(queryResult);
+    });
+  })
+}
+
+module.exports = {
+  fetch_wishlist, fetch_wishlist_duplicates, insert_wishtlist, fetch_user_detail, insert_user, check_user_existence
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-._sql_db.html">./sql_db</a></li><li><a href="module-._steam.html">./steam</a></li></ul><h3>Classes</h3><ul><li><a href="app.html">app</a></li><li><a href="module-._sql_db-connection.html">connection</a></li></ul><h3>Global</h3><ul><li><a href="global.html#saltRounds">saltRounds</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Apr 26 2018 17:26:33 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -4,8 +4,7 @@
   "description": "Web Dev project",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "jest --forceExit --coverage"
   },
   "repository": {
     "type": "git",
@@ -24,9 +23,14 @@
     "express": "^4.16.2",
     "handlebars": "^4.0.11",
     "hbs": "^4.0.1",
+    "jsdoc": "^3.5.5",
     "lodash": "^4.17.5",
     "mysql": "^2.15.0",
+    "nodemailer": "^4.6.4",
     "request": "^2.83.0",
     "subsequence-search": "^1.0.1"
+  },
+  "devDependencies": {
+    "jest": "^22.4.3"
   }
 }
