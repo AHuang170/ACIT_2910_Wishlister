@@ -63,7 +63,7 @@ describe('GOG Tests', () => {
     }),
     test("Return empty list for unmatched name", () => {
         return gog.gog_api("afdsafdsaf").then((result) => {
-            expect(_.isArray(result)).
+            expect(result).
             toBe([])
         })
     })

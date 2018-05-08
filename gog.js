@@ -16,7 +16,7 @@ var gog_api = (game_name) => {
         } else {
 
             var gameList = body.products;
-
+            console.log(gameList)
             resolve(gameList);
           }
         });
@@ -28,3 +28,5 @@ var gog_api = (game_name) => {
  module.exports = {
    gog_api
  }
+
+console.log(gog_api('asdfasdfas'))
