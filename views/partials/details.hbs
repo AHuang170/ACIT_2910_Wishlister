@@ -2,7 +2,9 @@
   {{#if badAdd}}
     <div class='formMessage'>Item already exists in wishlist..</div>
   {{/if}}
-  <div id="err">{{error}}</div>
+  {{#if notFound}}
+    <div id="err">{{error}}</div>
+  {{/if}}
   {{> list}}
   <p>{{{gameThumb}}}</p>
   <p>{{gamename}}</p>

@@ -1,5 +1,4 @@
 const express = require('express');
-const request = require('request');
 const hbs = require('hbs');
 const fs = require('fs');
 const _ = require('lodash');
@@ -10,44 +9,11 @@ const bcrypt = require('bcrypt');
 const serverPort = 8080;
 const saltRounds = 10;
 
+//Contains all functions that uses the steam api, namely steam and game_loop
+const steam_function = require('./steam.js');
+
 // --------------------------------- MySQL RDS ---------------------------------
-/**
- * Config.js file for the server
- */
-const config = require('./config.js');
-var mysql = config.mysql;
-
-/**
- * Function from config.js
- * @class
- */
-var connection = config.connection;
-
-/**
- * Connect to the database
- * @param {requestCallback} err - The return message if there is an error with the connection
- */
-connection.connect(function(err) {
-    if (err) {
-        console.error('Database connection failed: ' + err.stack);
-        return;
-    }
-
-    console.log('Connected to database with id: ' + connection.threadId);
-});
-
-var sql = 'SELECT * FROM users';
-
-/**
- * Query from the database
- * @param {string} sql - The sql command passed to the function based on user input
- * @param {requestCallback} err - Return err if there is an error
- * @param {requestCallback} rows - Return rows for a query
- * @param {requestCallback} fields - Return fields for a query
- */
-connection.query(sql, function(err, rows, fields) {
-    if (err) throw err
-});
+const sql_db_function = require('./sql_db.js');
 
 // ------------------------------- Load Game List ------------------------------
 var gamelist = fs.readFileSync('filtered_games.json');
@@ -85,9 +51,9 @@ hbs.registerHelper('apps', (list) => {
     var out = '';
     for (var item in titleList) {
         if (titleList[item][2] === 'Discount 0%') {
-            out = out + "<div class='game shadow'><p>" + titleList[item][0] + "</p><p>" + titleList[item][1] + "</p><p>" + titleList[item][2] + "</p></div>";
+            out = out + "<div class='game shadow'>" + titleList[item][3] + "<p>" + titleList[item][0] + "</p><p>" + titleList[item][1] + "</p><p>" + titleList[item][2] + "</p><div class='deleteButton' href='/delete?removeFromWishlist={}' >x</div>" + "</div>";
         } else {
-            out = out + "<div class='game_sale shadow'><p>" + titleList[item][0] + "</p><p>" + titleList[item][1] + "</p><p>" + titleList[item][2] + "</p></div>";
+            out = out + "<div class='game_sale shadow'>" +  titleList[item][3] + "<p>" + titleList[item][0] + "</p><p>" + titleList[item][1] + "</p><p>" + titleList[item][2] + "</p><div class='deleteButton' href='/delete?removeFromWishlist={}' >x</div>" + "</div>";
         }
     }
     return out;
@@ -110,23 +76,29 @@ app.get('/', (request, response) => {
     if (request.session.uid != undefined) {
         target_id = request.session.uid;
     }
-    var query = `SELECT * FROM wishlist WHERE uid = ${target_id}`;
-    connection.query(query, function(err, queryResult, fields) {
-        var returnList = [];
 
-        game_loop(queryResult).then((result) => {
-            request.session.wishlist = result;
+    sql_db_function.fetch_wishlist(target_id).then((queryResult) => {
 
-            response.render('index.hbs', {
-                gameList: request.session.wishlist,
-                year: new Date().getFullYear(),
-                loggedIn: request.session.loggedIn,
-                userName: request.session.userName,
-            });
-        }).catch((error) => {
-            serverError(response, error);
-        });
+      return steam_function.game_loop(queryResult);
+
+    }).then((result) => {
+
+      request.session.wishlist = result;
+      response.render('index.hbs', {
+          gameList: request.session.wishlist,
+          year: new Date().getFullYear(),
+          loggedIn: request.session.loggedIn,
+          userName: request.session.userName,
+          details: 'Game Search'
+
+      });
+
+    }).catch((error) => {
+
+        serverError(response, error);
+
     });
+
 });
 
 // Search for game using static JSON gamelist, and Steam API
@@ -147,7 +119,7 @@ app.post('/', (request, response) => {
             var appid = gameobj['applist'].apps[index].appid.toString();
             request.session.appid = appid;
 
-            steam(appid).then((result) => {
+            steam_function.steam(appid).then((result) => {
                 var initial_price = parseInt(result.price_overview.initial);
                 var disct_percentage = parseInt(result.price_overview.discount_percent);
                 var current_price = '$' +
@@ -158,10 +130,11 @@ app.post('/', (request, response) => {
                     year: new Date().getFullYear(),
                     loggedIn: request.session.loggedIn,
                     userName: request.session.userName,
-                    gamename: `Game Name: ${result.name}`,
+                    gamename: `${result.name}`,
                     price: `Current Price: ${current_price}`,
                     discount: `Discount ${disct_percentage}%`,
-                    displayDetails: true
+                    displayDetails: true,
+                    details: 'Search Results'
                 });
             }).catch((error) => {
                 console.log(error);
@@ -182,6 +155,9 @@ app.post('/', (request, response) => {
                 var gameName = result.data[i].name;
                 gameList.push(gameName);
             }
+
+            resultNotFound = maxItem == 0;
+
             response.render('index.hbs', {
                 gameList: request.session.wishlist,
                 year: new Date().getFullYear(),
@@ -189,7 +165,9 @@ app.post('/', (request, response) => {
                 userName: request.session.userName,
                 distype: "block",
                 searchList: gameList,
-                error: "Game not found.  Select from closest results."
+                notFound: resultNotFound,
+                error: "Game not found.  Select from closest results.",
+                details: "Search Results"
             });
         }
     }
@@ -205,11 +183,10 @@ app.get('/fetchDetails', (request, response) => {
         var appid = gameobj['applist'].apps[index].appid.toString();
         request.session.appid = appid;
 
-        steam(appid).then((result) => {
+        steam_function.steam(appid).then((result) => {
 
             var initial_price = parseInt(result.price_overview.initial);
             var disct_percentage = parseInt(result.price_overview.discount_percent);
-
             var final_price = (initial_price * (1 - (disct_percentage / 100)) / 100).toFixed(2).toString();
 
             var current_price = `$${final_price}`;
@@ -220,10 +197,12 @@ app.get('/fetchDetails', (request, response) => {
                 failedAuth: false,
                 loggedIn: request.session.loggedIn,
                 userName: request.session.userName,
-                gamename: `Game Name: ${result.name}`,
+                gamename: `${result.name}`,
                 price: `Current Price: ${current_price}`,
                 discount: `Discount ${disct_percentage}%`,
-                displayDetails: true
+                displayDetails: true,
+                gameThumb: `<img id=\"gameThumb\" class=\"shadow\" src=\"${result.header_image}\" />`,
+                details: 'Game Details'
             });
         }).catch((error) => {
             console.log(error);
@@ -237,60 +216,65 @@ app.post('/loginAuth', (request, response) => {
     var input_name = request.body.username
     var input_pass = request.body.password
     var resultName = 'numMatch';
-    var query = `SELECT * FROM users WHERE username = '${input_name}'`;
+
+    // var query = `SELECT * FROM users WHERE username = '${input_name}'`;
 
     var empty_field = (input_name == '' || input_pass == '');
 
-    connection.query(query, function(err, result, fields) {
-        if (err) throw err
+    sql_db_function.fetch_user_detail(input_name).then((result) => {
+      if (result.length != 1) {
+          request.session.loggedIn = false;
+          response.render('index.hbs', {
+              year: new Date().getFullYear(),
+              failedAuth: true,
+              emptyField: empty_field,
+              loggedIn: request.session.loggedIn,
+              details: 'Game Search'
+          });
+      } else {
+        var hashed_pass = result[0]["password"];
 
-        if (result.length != 1) {
-            request.session.loggedIn = false;
-            response.render('index.hbs', {
-                year: new Date().getFullYear(),
-                failedAuth: true,
-                emptyField: empty_field,
-                loggedIn: request.session.loggedIn,
-            });
-        } else {
-            var hashed_pass = result[0]["password"];
+        bcrypt.compare(input_pass, hashed_pass).then(function(authenticated) {
+            if (authenticated) {
 
-            bcrypt.compare(input_pass, hashed_pass).then(function(authenticated) {
-                if (authenticated) {
+                request.session.loggedIn = true;
+                request.session.userName = input_name;
+                request.session.uid = result[0]["uid"];
 
-                    request.session.loggedIn = true;
-                    request.session.userName = input_name;
-                    request.session.uid = result[0]["uid"];
 
-                    var wishlistQuery = `SELECT * FROM wishlist WHERE uid = ${request.session.uid}`;
-                    connection.query(wishlistQuery, function(err, queryResult, fields) {
 
-                        game_loop(queryResult).then((result) => {
-                            request.session.wishlist = result;
+                sql_db_function.fetch_wishlist(request.session.uid).then((queryResult) => {
+                  return steam_function.game_loop(queryResult);
+                }).then((result) => {
+                  request.session.wishlist = result;
+                  response.render('index.hbs', {
+                      gameList: request.session.wishlist,
+                      year: new Date().getFullYear(),
+                      loggedIn: request.session.loggedIn,
+                      userName: request.session.userName,
+                      details: 'Game Search'
+                  });
 
-                            response.render('index.hbs', {
-                                gameList: request.session.wishlist,
-                                year: new Date().getFullYear(),
-                                loggedIn: request.session.loggedIn,
-                                userName: request.session.userName,
-                            });
-                        }).catch((error) => {
-                            serverError(response, error);
-                        })
-                    });
-                } else {
-                    request.session.loggedIn = false;
-                    response.render('index.hbs', {
-                        year: new Date().getFullYear(),
-                        failedAuth: true,
-                        loggedIn: request.session.loggedIn,
-                    });
-                }
-            }).catch((error) => {
-                serverError(response, error);
-            });
-        }
-    });
+                }).catch((error) => {
+                    serverError(response, error);
+                });
+
+            } else {
+                request.session.loggedIn = false;
+                response.render('index.hbs', {
+                    year: new Date().getFullYear(),
+                    failedAuth: true,
+                    loggedIn: request.session.loggedIn,
+                    details: 'Game Search'
+                });
+            }
+        }).catch((error) => {
+            serverError(response, error);
+        });
+      }
+    }).catch((error) => {
+      serverError(response, error);
+    })
 });
 
 // Delete sessions data and re-render the home page
@@ -298,6 +282,7 @@ app.get('/logout', (request, response) => {
     request.session = null;
     response.render('index.hbs', {
         year: new Date().getFullYear(),
+        details: 'Game Search'
     });
 });
 
@@ -323,8 +308,8 @@ app.post('/createUser', (request, response) => {
     var pw_mismatch = input_user_pass != input_dupe_pass;
     var resultName = 'numName';
 
-    alreadyExists(input_user_name, resultName).then((result) => {
-        if (weak_pass || weak_pass || short_name || pass_space || containsSpace || pw_mismatch) {
+    sql_db_function.check_user_existence(input_user_name, resultName).then((result) => {
+        if (weak_pass || weak_pass || short_name || pass_space || containsSpace || pw_mismatch || result) {
             response.render('acc_create.hbs', {
                 mismatch: pw_mismatch,
                 shortName: short_name,
@@ -336,13 +321,13 @@ app.post('/createUser', (request, response) => {
             });
         } else {
             bcrypt.hash(input_user_pass, saltRounds).then((hash) => {
-                var addQ = `INSERT INTO users (uid, username, password) VALUES (NULL, '${input_user_name}', '${hash}');`;
-                connection.query(addQ, function(err, result, fields) {
-                    if (err) throw err;
-                    response.render('acc_created.hbs', {
-                        noLogIn: true
-                    });
+                return sql_db_function.insert_user(input_user_name, hash);
+            }).then((result) => {
+              if(result){
+                response.render('acc_created.hbs', {
+                    noLogIn: true
                 });
+              }
             }).catch((error) => {
                 serverError(response, error);
             });
@@ -364,45 +349,37 @@ app.post('/addToWishlist', (request, response) => {
         });
     } else if (request.session.loggedIn === true) {
 
-
+        var duplicate = false;
         // Pre-Step 2 - check for duplicate entry
-        var chkQuery = `SELECT * FROM wishlist WHERE uid = ${request.session.uid} AND appid = ${request.session.appid}`;
+        sql_db_function.fetch_wishlist_duplicates(request.session.uid, request.session.appid).then((result) => {
 
-        connection.query(chkQuery, function(err, result, fields) {
-            if (err) throw err
+          duplicate = (result.length != 0);
 
-            var duplicate = (result.length != 0);
+          if (!duplicate) {
 
-            // Step 2 - Write the game id to the database with their userid
-            if (!duplicate) {
-                var addQuery = `INSERT INTO wishlist (uid, appid) VALUES (${request.session.uid}, ${request.session.appid})`;
-                connection.query(addQuery, function(err, result, fields) {
-                    if (err) throw err
-                });
-            }
-
-            // Step 3 - Get all their games from the database, and update the wishlist
-            var wishlistQuery = `SELECT * FROM wishlist WHERE uid = ${request.session.uid}`;
-            connection.query(wishlistQuery, function(err, queryResult, fields) {
-                var returnList = [];
-
-                game_loop(queryResult).then((result) => {
-                    request.session.wishlist = result;
-
-                    response.render('index.hbs', {
-                        gameList: request.session.wishlist,
-                        year: new Date().getFullYear(),
-                        loggedIn: request.session.loggedIn,
-                        userName: request.session.userName,
-                        badAdd: duplicate
-                    });
+              sql_db_function.insert_wishtlist(request.session.uid, request.session.appid).then((result) => {
+                // Step 3 - Get all their games from the database, and update the wishlist
+                sql_db_function.fetch_wishlist(request.session.uid).then((queryResult) => {
+                  return steam_function.game_loop(queryResult);
+                }).then((result) => {
+                  request.session.wishlist = result;
+                  response.render('index.hbs', {
+                      gameList: request.session.wishlist,
+                      year: new Date().getFullYear(),
+                      loggedIn: request.session.loggedIn,
+                      userName: request.session.userName,
+                      badAdd: duplicate,
+                      details: 'Game Search'
+                  });
                 }).catch((error) => {
                     serverError(response, error);
                 });
-            });
-
+              }).catch((error) => {
+                serverError(response, error);
+              });
+          }
         });
-    }
+      }
 });
 
 // Handle all other paths and render 404 error page
@@ -416,31 +393,6 @@ app.listen(8080, () => {
     console.log(`Server is up on the port ${serverPort}`);
 });
 
-// Query Steam API using a valid appid
-var steam = (game_id) => {
-    return new Promise((resolve, reject) => {
-        request({
-            url: `http://store.steampowered.com/api/appdetails?appids=${game_id}`,
-            json: true
-        }, (error, response, body) => {
-            if (error) {
-                reject(error);
-            } else {
-
-                var gameData = Object.assign({}, body[game_id].data);
-
-                if (gameData.price_overview == undefined) {
-                    gameData.price_overview = {
-                        initial: 0,
-                        discount_percent: 0
-                    };
-                }
-                resolve(eval(gameData));
-            }
-        });
-    });
-}
-
 // Handle server errors and render 500 error page
 var serverError = (response, errorMsg) => {
     console.log(errorMsg);
@@ -448,52 +400,10 @@ var serverError = (response, errorMsg) => {
     response.render('500.hbs');
 }
 
-// Check if the username already exists in the MySQL database
-var alreadyExists = (input_user_name, resultName) => {
-    return new Promise((resolve, reject) => {
-        var nameQuery = `SELECT count(*) AS ${resultName} FROM users WHERE username = '${input_user_name}'`;
-        var queryResult = false;
-
-        connection.query(nameQuery, function(err, result, fields) {
-            if (err) {
-                reject(err);
-            }
-            if (result[0][resultName] != 0) {
-                queryResult = true;
-            }
-            resolve(queryResult);
-        });
-    })
-}
-
-// Display a list of games stored in the user's wishlist. Appids are retreived
-// form the MySQL database. The async function makes the page wait until then
-// the retrieval is complete
-var game_loop = (queryResult) => {
-    return new Promise(async(resolve, reject) => {
-        var returnList = [];
-
-        for (const item of queryResult) {
-            try {
-                var steam_result = await steam(item.appid);
-            } catch (error) {
-                reject(error);
-            }
-
-            var initial_price = parseInt(steam_result.price_overview.initial);
-            var disct_percentage = parseInt(steam_result.price_overview.discount_percent);
-            var current_price = (initial_price * (1 - (disct_percentage / 100)) / 100).toFixed(2);
-            var steam_name = `Game Name: ${steam_result.name}`;
-            var steam_price = `Current Price: $${current_price.toString()}`;
-            var steam_discount = `Discount ${disct_percentage}%`;
-
-            returnList.push([steam_name, steam_price, steam_discount]);
-        }
-        resolve(returnList);
-    })
-}
-
 // Aldrich Huang - Test Commit
 // Robert Janzen - Commit for Aldrich
 // David - master pull
 // Robert - Test Pull Request
+//Quinton- first pull requested
+// Aldrich - Test Pull Request
+// Upstream - Fetch Test
