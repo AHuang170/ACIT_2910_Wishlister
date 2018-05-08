@@ -34,6 +34,10 @@ describe("Steam Tests", () => {
   test("Process steam object - Game Title", () => {
       expect(steam.process_object(mock_steam_obj)[0]).
       toBe("Into the Breach")
+  }),
+  test("Calculte steam app price", () => {
+    expect(steam.calculate_price(10020, 50)).
+    toBe("50.10")
   })
 })
 
