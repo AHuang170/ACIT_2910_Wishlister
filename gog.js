@@ -18,7 +18,9 @@ var gog_api = (game_name) => {
             var gameList = body.products;
 
             resolve(gameList);
-  })
+          }
+        });
+  });
 }
 
 
