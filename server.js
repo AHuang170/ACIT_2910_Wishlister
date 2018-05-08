@@ -357,10 +357,14 @@ app.post('/createUser', (request, response) => {
     var invalidEmail = validateEmail(input_user_email);
     var emailName = 'emailName';
     var emailDBStatus = 'temp';
-
-    sql_db_function.check_email_existence(input_user_email, emailName).then((status) => {emailDBStatus = status});
+    var result = 'temp';
 
     sql_db_function.check_user_existence(input_user_name, resultName).then((result) => {
+      result = result;
+
+      sql_db_function.check_email_existence(input_user_email, emailName).then((status) => {
+        emailDBStatus = status
+
         if (weak_pass || weak_pass || short_name || pass_space || containsSpace || pw_mismatch || result || invalidEmail || emailDBStatus) {
             response.render('acc_create.hbs', {
                 mismatch: pw_mismatch,
@@ -373,6 +377,7 @@ app.post('/createUser', (request, response) => {
                 emailNotFound: emailDBStatus,
                 noLogIn: true
             });
+
         } else {
             bcrypt.hash(input_user_pass, saltRounds).then((hash) => {
                 return sql_db_function.insert_user(input_user_name, hash, input_user_email);
@@ -390,6 +395,7 @@ app.post('/createUser', (request, response) => {
     }).catch((error) => {
         serverError(response, error);
     });
+  })
 })
 
 // Add game to wishlist and store result in MySQL database for current user
