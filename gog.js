@@ -33,7 +33,14 @@ var isolate_game_obj = (game_name, game_list) => {
   return game_obj
 }
 
+var extract_data = (raw_data) => {
+  return {
+    title: raw_data.title,
+    price: raw_data.price.baseAmount
+  }
+}
+
 
  module.exports = {
-   gog_api, isolate_game_obj
+   gog_api, isolate_game_obj, extract_data
  }
