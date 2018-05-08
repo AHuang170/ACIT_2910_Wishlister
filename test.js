@@ -21,6 +21,90 @@ beforeAll(() => {
             "header_image": "https://steamcdn-a.akamaihd.net/steam/apps/590380/header.jpg?t=1519989363",
             "steam_appid": 590380
         }
+
+        mock_gog_obj_1 =
+        {
+            customAttributes: [],
+            developer: "CD PROJEKT RED",
+            publisher: "CD PROJEKT RED",
+            price: {
+                amount: "12.89",
+                baseAmount: "12.89",
+                finalAmount:"12.89",
+                isDiscounted: false,
+                discountPercentage: 0,
+                discountDifference: "0.00",
+                symbol: "C$",
+                isFree: false,
+                discount: 0,
+                isBonusStoreCreditIncluded: false,
+                bonusStoreCreditAmount: "0.00",
+                promoId: null
+            },
+            isDiscounted: false,
+            isInDevelopment: false,
+            id: 1207658924,
+            releaseDate: 1193346000,
+            buyable: true,
+            title: "The Witcher: Enhanced Edition",
+            image: "//images-1.gog.com/37d4a…e31aaaefc74bbcd46ebd190",
+            url: "/game/the_witcher",
+            supportUrl: "/support/the_witcher",
+            forumUrl: "/forum/the_witcher",
+            category: "Role-playing",
+            originalCategory: "Role-playing",
+            rating: 47,
+            type: 1,
+            isComingSoon: false,
+            isPriceVisible: true,
+            isMovie: false,
+            isGame: true,
+            slug: "the_witcher",
+            isWishlistable: true
+        }
+
+        mock_gog_obj_2 =
+        {
+            customAttributes: [],
+            developer: "CD PROJEKT RED",
+            publisher: "CD PROJEKT RED",
+            price: {
+                amount: "12.89",
+                baseAmount: "12.89",
+                finalAmount:"12.89",
+                isDiscounted: false,
+                discountPercentage: 0,
+                discountDifference: "0.00",
+                symbol: "C$",
+                isFree: false,
+                discount: 0,
+                isBonusStoreCreditIncluded: false,
+                bonusStoreCreditAmount: "0.00",
+                promoId: null
+            },
+            isDiscounted: false,
+            isInDevelopment: false,
+            id: 1207658924,
+            releaseDate: 1193346000,
+            buyable: true,
+            title: "The Witcher 2: Enhanced Edition",
+            image: "//images-1.gog.com/37d4a…e31aaaefc74bbcd46ebd190",
+            url: "/game/the_witcher",
+            supportUrl: "/support/the_witcher",
+            forumUrl: "/forum/the_witcher",
+            category: "Role-playing",
+            originalCategory: "Role-playing",
+            rating: 47,
+            type: 1,
+            isComingSoon: false,
+            isPriceVisible: true,
+            isMovie: false,
+            isGame: true,
+            slug: "the_witcher",
+            isWishlistable: true
+        }
+
+        mock_gog_game_list = [mock_gog_obj_1, mock_gog_obj_2]
     })
 })
 
@@ -68,19 +152,17 @@ describe('GOG Tests', () => {
         })
     }),
     test("Return just the specified game object", () => {
-        return gog.gog_api("The Witcher: Enhanced Edition").then((result) => {
-            return gog.isolate_game_obj("The Witcher: Enhanced Edition", result)
-        }).then((game_obj) => {
-            expect(game_obj.title).
-            toBe("The Witcher: Enhanced Edition")
-        })
+        expect(gog.isolate_game_obj("The Witcher: Enhanced Edition", mock_gog_game_list).title).
+        toBe("The Witcher: Enhanced Edition")
+
     }),
     test("Return undefined for unmatched names", () => {
-        return gog.gog_api("afdsafdsaf").then((result) => {
-            return gog.isolate_game_obj("afdsafdsaf", result)
-        }).then((game_obj) => {
-            expect(game_obj).
-            toBe(undefined)
-        })
+        expect(gog.isolate_game_obj("afdsafdsaf", [])).
+        toBe(undefined)
+
+    }),
+    test("Extract data function should return an object", () => {
+        expect(_.isObject(gog.extract_data(mock_gog_obj_1))).
+        toBeTruthy()
     })
 })
