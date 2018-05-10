@@ -395,7 +395,9 @@ app.post('/createUser', (request, response) => {
     }).catch((error) => {
         serverError(response, error);
     });
-  })
+  }).catch((error) => {
+      serverError(response, error);
+  });
 })
 
 // Add game to wishlist and store result in MySQL database for current user
@@ -511,6 +513,31 @@ app.post('/passwordRecovery', (request, response) => {
       }
     })
   });
+
+// temp function to check changing password
+app.post('/passwordRecoveryChange', (request, response) => {
+  var new_pass = request.body.rec_pass;
+  var uid = 111;
+
+
+  // note add empty hidden input field containing
+
+//hash, render, db function
+  bcrypt.hash(new_pass, saltRounds).then((hash) => {
+      return sql_db_function.update_password(uid, hash);
+  }).then((result)=>{
+    if(result){
+      response.render('passwordRecovered.hbs', {
+          noLogIn: true
+      });
+
+    }
+  }).catch((error) => {
+      serverError(response, error);
+  });
+});
+//end of temp function
+
 
 // Handle all other paths and render 404 error page
 app.use((request, response) => {

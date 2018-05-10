@@ -339,6 +339,35 @@ var get_uid_from_email = (input_user_email) => {
   })
 }
 
+var update_password = (uid, new_password_hash) => {
+
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var changePassword = `UPDATE users SET users.password='${new_password_hash}' WHERE uid=${uid};`;
+
+    /**
+     * @param uid - Sql command to query users table
+     * @param new_password_hash - Hashed password entered by user
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} result - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(changePassword, function(err, result, fields) {
+        if (err) {
+            reject(err);
+        }
+        else {
+          resolve(true);
+        }
+
+    });
+  })
+}
+
 module.exports = {
-  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence, delete_from_wishlist, get_uid_from_email
+  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence, delete_from_wishlist, get_uid_from_email, update_password
 }
