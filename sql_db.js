@@ -334,7 +334,6 @@ var get_uid_from_email = (input_user_email) => {
 
 
         queryResult = result[0]['uid'];
-
         resolve(queryResult);
     });
   })
