@@ -1,7 +1,7 @@
 var steam = require("./steam")
 var sql = require("./sql_db.js")
 var gog = require("./gog.js")
-
+var server = require("./server.js")
 const _ = require('lodash');
 
 beforeAll(() => {
@@ -21,6 +21,14 @@ beforeAll(() => {
             "header_image": "https://steamcdn-a.akamaihd.net/steam/apps/590380/header.jpg?t=1519989363",
             "steam_appid": 590380
         }
+    }).then((tyler) => {
+      return sql.check_email_existence('test@test.com', 'userEmail').then((validEmail) => {
+        validEmailTest = validEmail;
+      }).then((tyler) => {
+      return sql.get_uid_from_email('test@test.com').then((userID) => {
+        userIDTest = userID;
+      })
+    })
 
         mock_gog_obj_1 =
         {
@@ -137,6 +145,15 @@ describe('SQL DB Tests', () => {
     })
 })
 
+describe('Tyler SQL_db Tests', () => {
+  test('Check if email is in database', () => {
+    expect(validEmailTest).toBe(true)
+  })
+  test('Fetch uid from input email', () => {
+    expect(userIDTest).toBe(63)
+  })
+})
+
 describe('GOG Tests', () => {
     test("Receive JSON object from GOG API", () => {
         return gog.gog_api("Witcher").then((result) => {
@@ -169,7 +186,7 @@ describe('GOG Tests', () => {
         expect(gog.extract_data(mock_gog_obj_1)).
         toEqual({
             current_price:
-            
+
         })
     })
 })

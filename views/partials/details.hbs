@@ -6,6 +6,9 @@
   {{#if badAdd}}
     <div class='formMessage'>Item already exists in wishlist..</div>
   {{/if}}
+  {{#if emailSent}}
+    <div class='formMessage'>Password Recovery Email Sent!</div>
+  {{/if}}
   {{#if notFound}}
     <div id="err">{{error}}</div>
   {{/if}}
