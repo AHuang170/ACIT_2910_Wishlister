@@ -7,7 +7,6 @@ const cookieSession = require('cookie-session');
 const subsearch = require('subsequence-search');
 const bcrypt = require('bcrypt');
 const serverPort = 8080;
-var math = require('mathjs');
 
 /**
  * constant for password hash algorithm
@@ -56,9 +55,9 @@ hbs.registerHelper('apps', (list) => {
     var out = '';
     for (var item in titleList) {
         if (titleList[item][2] === 'Discount 0%') {
-            out = `${out}<div class='game shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='Steam_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
+            out = `${out}<div class='game shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}</p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
         } else {
-            out = `${out}<div class='game_sale shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img id='wishlistlogo' src='Steam_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
+            out = `${out}<div class='game_sale shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}</p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
         }
     }
     return out;
@@ -73,7 +72,13 @@ hbs.registerHelper('searchResults', (list) => {
     return out;
 })
 
+// validate email
 
+var validateEmail = (email) => {
+  var valid = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  error = !valid.test(email);
+  return error;
+}
 
 
 
@@ -327,19 +332,12 @@ app.get('/accCreate', (request, response) => {
     });
 });
 
-// Load a new page where the user can recover their password via an email
+// Load a new page where the user can recover an email
 app.get('/RecoverPassword', (request, response) => {
     response.render('passwordRecovery.hbs', {
 
     });
 });
-
-// Load a new page from the emailed link where a user can enter their new password
-app.get('/passwordRecoveryEntry', (request, response) => {
-    response.render('passwordRecoveryEntry.hbs', {
-    });
-});
-
 
 // Accepts the user's email, name, and password. Performs server side checks for
 // password quality
@@ -355,17 +353,9 @@ app.post('/createUser', (request, response) => {
     var pw_mismatch = check_matching_passwords(input_user_pass, input_dupe_pass);
     var resultName = 'numName';
     var invalidEmail = validateEmail(input_user_email);
-    var emailName = 'emailName';
-    var emailDBStatus = 'temp';
-    var result = 'temp';
 
     sql_db_function.check_user_existence(input_user_name, resultName).then((result) => {
-      result = result;
-
-      sql_db_function.check_email_existence(input_user_email, emailName).then((status) => {
-        emailDBStatus = status
-
-        if (weak_pass || weak_pass || short_name || pass_space || containsSpace || pw_mismatch || result || invalidEmail || emailDBStatus) {
+        if (weak_pass || weak_pass || short_name || pass_space || containsSpace || pw_mismatch || result || invalidEmail) {
             response.render('acc_create.hbs', {
                 mismatch: pw_mismatch,
                 shortName: short_name,
@@ -374,10 +364,8 @@ app.post('/createUser', (request, response) => {
                 weakPass: weak_pass,
                 spacePass: pass_space,
                 invalidEmailError: invalidEmail,
-                emailNotFound: emailDBStatus,
                 noLogIn: true
             });
-
         } else {
             bcrypt.hash(input_user_pass, saltRounds).then((hash) => {
                 return sql_db_function.insert_user(input_user_name, hash, input_user_email);
@@ -395,7 +383,6 @@ app.post('/createUser', (request, response) => {
     }).catch((error) => {
         serverError(response, error);
     });
-  })
 })
 
 // Add game to wishlist and store result in MySQL database for current user
@@ -444,73 +431,63 @@ app.post('/addToWishlist', (request, response) => {
       }
 });
 
-//
-
 // test if the users email is in the database and send them an email if it is
 
-app.post('/passwordRecovery', (request, response) => {
-
-    var recovery_email = request.body.rec_email;
-    var resultEmail = 'boolMatch';
-    var invalidEmail = validateEmail(recovery_email, resultEmail);
-    var token = 'token';
-    var uid = 'uid';
-
-    sql_db_function.check_email_existence(recovery_email, resultEmail).then((result) => {
-
-      if (result)
-      {
-        // get uid from email
-            sql_db_function.get_uid_from_email(recovery_email).then((resultingUID) => {
-                return resultingUID;
-            }).then((uid) => {
-              //generate token
-              var num = (Math.random()*100000)+(Math.random()*100000000000000000);
-              var token = num.toString('16');
-              token = token + token + token;
-              token = token.split('').sort(function(){return 0.5-Math.random()}).join('');
-
-
-              //sending the email
-      var nodemailer = require('nodemailer');
-      var transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: 'wishlisterhelp@gmail.com',
-          pass: 'Pa$$word123'
-        }
-      });
-      var mailOptions = {
-        from: 'wishlisterhelp@gmail.com',
-        to: recovery_email,
-        subject: 'Password Recovery for Wishlister',
-        text: 'http://localhost:8080/passwordRecoveryEntry?id='+uid+'token='+token
-      };
-
-      transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-          console.log(error);
-        } else {
-          response.render('index.hbs',  {
-            gameList: request.session.wishlist,
-            year: new Date().getFullYear(),
-            loggedIn: request.session.loggedIn,
-            userName: request.session.userName,
-            details: 'Game Search',
-            emailSent: true
-          });
-        }
-      });
-    })
-      }
-      else {
-            response.render('passwordRecovery.hbs', {
-              emailNotFound: true,
-              invalidEmailError: invalidEmail
-            });
-      }
-    })
-  });
+// app.post('/passwordRecovery', (request, response) => {
+//
+//     var recovery_email = request.body.rec_email;
+//     var resultEmail = 'boolMatch';
+//     var invalidEmail = validateEmail(request.body.rec_email);
+//
+//     sql_db_function.check_email_existence(recovery_email, resultEmail).then((result) => {
+//
+//       if (result)
+//       {
+//       response.render('index.hbs',  {
+//         gameList: request.session.wishlist,
+//         year: new Date().getFullYear(),
+//         loggedIn: request.session.loggedIn,
+//         userName: request.session.userName,
+//         details: 'Game Search'
+//       });
+//
+//
+//       var nodemailer = require('nodemailer');
+//       var transporter = nodemailer.createTransport({
+//         service: 'gmail',
+//         auth: {
+//           user: 'wishlisterhelp@gmail.com',
+//           pass: 'Pa$$word123'
+//         }
+//       });
+//
+//       var mailOptions = {
+//         from: 'wishlisterhelp@gmail.com',
+//         to: recovery_email,
+//         subject: 'Password Recovery for Wishlister',
+//         text: 'If only it worked!!'
+//       };
+//
+//       transporter.sendMail(mailOptions, function(error, info){
+//         if (error) {
+//           console.log(error);
+//         } else {
+//           response.render('index.hbs', {
+//           });
+//         }
+//       });
+//
+//       }
+//       else {
+//             response.render('passwordRecovery.hbs', {
+//               emailNotFound: true,
+//               invalidEmailError: invalidEmail
+//             });
+//       }
+//     })
+//
+//
+//     })
 
 // Handle all other paths and render 404 error page
 app.use((request, response) => {
@@ -564,12 +541,4 @@ var set_max_items = (item_count) => {
     return_count = 10;
   }
   return return_count;
-}
-
-// validate email
-
-var validateEmail = (email) => {
-  var valid = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  error = !valid.test(email);
-  return error;
 }

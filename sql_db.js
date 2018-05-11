@@ -278,7 +278,7 @@ var check_user_existence = (input_user_name, resultName) => {
   })
 }
 
-var check_email_existence = (input_user_email, emailName) => {
+var check_email_existence = (input_user_email, resultName) => {
 
   /**
    * Promise to query from database
@@ -286,7 +286,7 @@ var check_email_existence = (input_user_email, emailName) => {
    * @returns {Promise.reject} Returns the err variable
    */
   return new Promise ((resolve, reject) => {
-    var emailSearch = `SELECT count(*) AS ${emailName} FROM users WHERE email = '${input_user_email}'`;
+    var emailSearch = `SELECT count(*) AS ${resultName} FROM users WHERE email = '${input_user_email}'`;
     var queryResult = false;
 
     /**
@@ -299,18 +299,15 @@ var check_email_existence = (input_user_email, emailName) => {
         if (err) {
             reject(err);
         }
-
-        if (result[0][emailName] >= 1) {
+        if (result[0][resultName] == 1) {
             queryResult = true;
-
         }
-
         resolve(queryResult);
     });
   })
 }
 
-var get_uid_from_email = (input_user_email) => {
+var check_email_dupes = (input_user_email, resultName) => {
 
   /**
    * Promise to query from database
@@ -318,8 +315,8 @@ var get_uid_from_email = (input_user_email) => {
    * @returns {Promise.reject} Returns the err variable
    */
   return new Promise ((resolve, reject) => {
-    var emailSearch = `SELECT * FROM users WHERE email = '${input_user_email}'`;
-    var queryResult = 'An error has occured..';
+    var emailSearch = `SELECT count(*) AS ${resultName} FROM users WHERE email = '${input_user_email}'`;
+    var queryResult = false;
 
     /**
      * @param nameQuery - Sql command to query users table
@@ -331,14 +328,14 @@ var get_uid_from_email = (input_user_email) => {
         if (err) {
             reject(err);
         }
-
-
-        queryResult = result[0]['uid'];
+        if (result[0][resultName] == 1) {
+            queryResult = true;
+        }
         resolve(queryResult);
     });
   })
 }
 
 module.exports = {
-  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence, delete_from_wishlist, get_uid_from_email
+  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence,delete_from_wishlist
 }
