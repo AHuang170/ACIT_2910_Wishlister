@@ -164,5 +164,12 @@ describe('GOG Tests', () => {
     test("Extract data function should return an object", () => {
         expect(_.isObject(gog.extract_data(mock_gog_obj_1))).
         toBeTruthy()
+    }),
+    test("Extract the right attributes from the object", () => {
+        expect(gog.extract_data(mock_gog_obj_1)).
+        toEqual({
+            current_price:
+            
+        })
     })
 })
