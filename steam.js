@@ -99,5 +99,5 @@ var calculate_price = (initial_price, disct_percentage) => {
 }
 
 module.exports = {
-  steam, game_loop, process_object, calculate_price
+  steam, game_loop, process_object
 }
