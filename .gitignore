@@ -1,7 +1,7 @@
 config.js
 game_filter.js
 node_modules
-coverage/*
+coverage
 coverage/clover.xml
 coverage/coverage-final.json
 coverage/lcov-report/index.html
