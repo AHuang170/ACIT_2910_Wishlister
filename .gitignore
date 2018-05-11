@@ -1,6 +1,6 @@
 config.js
 game_filter.js
-node_modules/*
+node_modules
 coverage/*
 coverage/clover.xml
 coverage/coverage-final.json
