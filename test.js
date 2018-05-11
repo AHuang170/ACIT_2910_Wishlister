@@ -5,12 +5,22 @@ var gog = require("./gog.js")
 const _ = require('lodash');
 
 beforeAll(() => {
+
+    var sql_test = new Promise((resolve, reject) => {
+        sql.connection.query('START TRANSACTION;', function(err, result, fields) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(result)
+            }
+        })
+    }).then((mysql_message) => {
+        console.log(mysql_message)
+    })
+
     return steam.steam(590380).then((result) => {
         steam_object = result;
-        return sql.fetch_wishlist(60);
     }).then((result) => {
-        db_list = result
-
         mock_steam_obj =
         {
             "name": "Into the Breach",
@@ -70,11 +80,11 @@ beforeAll(() => {
             publisher: "CD PROJEKT RED",
             price: {
                 amount: "12.89",
-                baseAmount: "12.89",
-                finalAmount:"12.89",
-                isDiscounted: false,
-                discountPercentage: 0,
-                discountDifference: "0.00",
+                baseAmount: "12.00",
+                finalAmount:"6.00",
+                isDiscounted: true,
+                discountPercentage: 50,
+                discountDifference: "6.00",
                 symbol: "C$",
                 isFree: false,
                 discount: 0,
@@ -104,13 +114,41 @@ beforeAll(() => {
             isWishlistable: true
         }
 
+        mock_steam_compare_obj = {
+            price_overview: {
+                initial: "13.00",
+                discount_percent: 0,
+            },
+            name: "The Witcher: Enhanced Edition"
+        };
+
         mock_gog_game_list = [mock_gog_obj_1, mock_gog_obj_2]
+
+    }).then((tyler) => {
+      return sql.check_email_existence('test@test.com', 'userEmail').then((validEmail) => {
+        validEmailTest = validEmail;
+      }).then((tyler) => {
+          return sql.get_uid_from_email('test@test.com').then((userID) => {
+              userIDTest = userID;
+          })
+      })
     })
 })
 
 afterAll(() => {
-    // Rebase Test - 1
-    // Rebase Test - 2
+    var sql_test = new Promise((resolve, reject) => {
+        sql.connection.query('ROLLBACK;', function(err, result, fields) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(result)
+            }
+        })
+    })
+
+    sql_test.then((result) => {
+        console.log(result)
+    })
     sql.connection.end()
 })
 
@@ -118,7 +156,6 @@ describe("Steam Tests", () => {
   test("Receive JSON object from Steam API", () => {
       expect(steam_object.type).
       toBe("game")
-
   }),
   test("Process steam object - Game Title", () => {
       expect(steam.process_object(mock_steam_obj)[0]).
@@ -130,12 +167,21 @@ describe("Steam Tests", () => {
   })
 })
 
-describe('SQL DB Tests', () => {
-    test("Fetch Wishlist from MySQL Database", () => {
-        expect(db_list[1].appid).
-        toBe(376520)
-    })
-})
+// describe('SQL DB Tests', () => {
+//
+//     // test("Add user into database", () => {
+//     //     expect(sql.insert_user())
+//     // })
+//
+//     // test("Insert into wishlist", () => {
+//     //     expect(sql.insert_wishlist())
+//     // })
+//
+//     // test("Fetch wishlist", () => {
+//     //     expect(sql.fetch_wishlist().appid).
+//     //     toBe(376520)
+//     // })
+// })
 
 describe('GOG Tests', () => {
     test("Receive JSON object from GOG API", () => {
@@ -164,5 +210,26 @@ describe('GOG Tests', () => {
     test("Extract data function should return an object", () => {
         expect(_.isObject(gog.extract_data(mock_gog_obj_1))).
         toBeTruthy()
+    }),
+    test("Extract the right attributes from the object", () => {
+        expect(gog.extract_data(mock_gog_obj_1)).
+        toEqual({
+            initial: "12.89",
+            discount_percent: 0,
+            name: "The Witcher: Enhanced Edition",
+        })
+    }),
+    test("Compare steam and gog prices", () => {
+        expect(steam.compare_prices(mock_steam_compare_obj, mock_gog_obj_1)).
+        toBe("gog")
     })
 })
+
+var initial_price = parseInt(steam_result.price_overview.initial);
+var disct_percentage = parseInt(steam_result.price_overview.discount_percent);
+var current_price = calculate_price(initial_price, disct_percentage);
+var steam_name = `${steam_result.name}`;
+var steam_price = `Current Price: $${current_price.toString()}`;
+var steam_discount = `Discount ${disct_percentage}%`;
+var steam_thumb = `<img class=\"wishThumb shadow\" src=\"${steam_result.header_image}\" />`;
+var app_id = steam_result.steam_appid;
