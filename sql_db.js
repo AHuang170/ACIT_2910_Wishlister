@@ -340,5 +340,5 @@ var get_uid_from_email = (input_user_email) => {
 }
 
 module.exports = {
-  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence,delete_from_wishlist
+  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence,delete_from_wishlist, get_uid_from_email
 }

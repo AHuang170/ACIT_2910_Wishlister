@@ -10,7 +10,14 @@ beforeAll(() => {
         return sql.fetch_wishlist(60);
     }).then((result) => {
         db_list = result
-
+        
+        return sql.check_email_existence('test@test.com', 'userEmail');
+    }).then((validEmail) => {
+        validEmailTest = validEmail;
+        return sql.get_uid_from_email('test@test.com');
+    }).then((userID) => {
+        userIDTest = userID;
+        
         mock_steam_obj =
         {
             "name": "Into the Breach",
@@ -21,15 +28,7 @@ beforeAll(() => {
             "header_image": "https://steamcdn-a.akamaihd.net/steam/apps/590380/header.jpg?t=1519989363",
             "steam_appid": 590380
         }
-    }).then((tyler) => {
-      return sql.check_email_existence('test@test.com', 'userEmail').then((validEmail) => {
-        validEmailTest = validEmail;
-      }).then((tyler) => {
-      return sql.get_uid_from_email('test@test.com').then((userID) => {
-        userIDTest = userID;
-      })
-    })
-
+        
         mock_gog_obj_1 =
         {
             customAttributes: [],
@@ -121,6 +120,8 @@ beforeAll(() => {
         };
 
         mock_gog_game_list = [mock_gog_obj_1, mock_gog_obj_2]
+        
+        
     })
 })
 
@@ -203,12 +204,3 @@ describe('GOG Tests', () => {
         toBe("gog")
     })
 })
-
-var initial_price = parseInt(steam_result.price_overview.initial);
-var disct_percentage = parseInt(steam_result.price_overview.discount_percent);
-var current_price = calculate_price(initial_price, disct_percentage);
-var steam_name = `${steam_result.name}`;
-var steam_price = `Current Price: $${current_price.toString()}`;
-var steam_discount = `Discount ${disct_percentage}%`;
-var steam_thumb = `<img class=\"wishThumb shadow\" src=\"${steam_result.header_image}\" />`;
-var app_id = steam_result.steam_appid;
