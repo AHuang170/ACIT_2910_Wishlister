@@ -278,7 +278,7 @@ var check_user_existence = (input_user_name, resultName) => {
   })
 }
 
-var check_email_existence = (input_user_email, resultName) => {
+var check_email_existence = (input_user_email, emailName) => {
 
   /**
    * Promise to query from database
@@ -286,7 +286,7 @@ var check_email_existence = (input_user_email, resultName) => {
    * @returns {Promise.reject} Returns the err variable
    */
   return new Promise ((resolve, reject) => {
-    var emailSearch = `SELECT count(*) AS ${resultName} FROM users WHERE email = '${input_user_email}'`;
+    var emailSearch = `SELECT count(*) AS ${emailName} FROM users WHERE email = '${input_user_email}'`;
     var queryResult = false;
 
     /**
@@ -299,15 +299,18 @@ var check_email_existence = (input_user_email, resultName) => {
         if (err) {
             reject(err);
         }
-        if (result[0][resultName] == 1) {
+
+        if (result[0][emailName] >= 1) {
             queryResult = true;
+
         }
+
         resolve(queryResult);
     });
   })
 }
 
-var check_email_dupes = (input_user_email, resultName) => {
+var get_uid_from_email = (input_user_email) => {
 
   /**
    * Promise to query from database
@@ -315,8 +318,8 @@ var check_email_dupes = (input_user_email, resultName) => {
    * @returns {Promise.reject} Returns the err variable
    */
   return new Promise ((resolve, reject) => {
-    var emailSearch = `SELECT count(*) AS ${resultName} FROM users WHERE email = '${input_user_email}'`;
-    var queryResult = false;
+    var emailSearch = `SELECT * FROM users WHERE email = '${input_user_email}'`;
+    var queryResult = 'An error has occured..';
 
     /**
      * @param nameQuery - Sql command to query users table
@@ -328,9 +331,9 @@ var check_email_dupes = (input_user_email, resultName) => {
         if (err) {
             reject(err);
         }
-        if (result[0][resultName] == 1) {
-            queryResult = true;
-        }
+
+
+        queryResult = result[0]['uid'];
         resolve(queryResult);
     });
   })
