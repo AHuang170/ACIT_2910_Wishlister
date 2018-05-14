@@ -230,7 +230,7 @@ describe('GOG Tests', () => {
         })
     }),
     test("Compare steam and gog prices", () => {
-        expect(steam.compare_prices(mock_steam_compare_obj, mock_gog_obj_1)).
+        expect((steam.compare_prices(mock_steam_compare_obj, mock_gog_obj_1)).store).
         toBe("gog")
     })
 })
