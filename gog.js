@@ -35,8 +35,9 @@ var isolate_game_obj = (game_name, game_list) => {
 
 var extract_data = (raw_data) => {
   return {
-    title: raw_data.title,
-    price: raw_data.price.baseAmount
+    name: raw_data.title,
+    initial: raw_data.price.baseAmount,
+    discount_percent: raw_data.price.discountPercentage
   }
 }
 
