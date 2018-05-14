@@ -167,7 +167,7 @@ describe('SQL DB Tests', () => {
         })
     }),
     test("Insert into wishlist", () => {
-        return  sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+        return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
             sql.insert_wishlist(uid, '376520').then((result) => {
                 expect(result.affectedRows).
                 toBe(1)
@@ -175,7 +175,7 @@ describe('SQL DB Tests', () => {
         })
     }),
     test("Fetch wishlist", () => {
-        return  sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+        return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
             sql.fetch_wishlist(uid).then((result) => {
                 expect(result[0].appid).
                 toBe(376520)
@@ -189,7 +189,32 @@ describe('SQL DB Tests', () => {
                 toBe(1)
             })
         })
+    }),
+    test("Fetch user details", () => {
+        return sql.fetch_user_detail('TestUser').then((result) => {
+            expect(result[0].email).
+            toBe('testuser@gmail.com')
+        })
+    }),
+    test("Check if user exists", () => {
+        return sql.check_user_existence('TestUser', 'user').then((result) => {
+            expect(result).
+            toBe(true)
+        })
+    }),
+    test("Check if email exists (false)", () => {
+        return sql.check_email_existence('notanemail', 'email').then((result) => {
+            expect(result).
+            toBe(false)
+        })
+    }),
+    test("Check if email exists (true)", () => {
+        return sql.check_email_existence('testuser@gmail.com', 'email').then((result) => {
+            expect(result).
+            toBe(true)
+        })
     })
+
 })
 
 describe('GOG Tests', () => {
