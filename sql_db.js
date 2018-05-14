@@ -19,6 +19,7 @@ var mysql = config.mysql;
  * @class
  */
 var connection = config.connection;
+var current_uid = 0;
 
 /**
  * Connect to the database
@@ -332,13 +333,13 @@ var get_uid_from_email = (input_user_email) => {
             reject(err);
         }
 
-
         queryResult = result[0]['uid'];
+        current_uid = queryResult
         resolve(queryResult);
     });
   })
 }
 
 module.exports = {
-  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence,delete_from_wishlist, get_uid_from_email
+  fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail, insert_user, check_user_existence, check_email_existence, delete_from_wishlist, get_uid_from_email, connection, current_uid
 }
