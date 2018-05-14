@@ -4,7 +4,6 @@ var gog = require("./gog.js")
 const _ = require('lodash');
 
 beforeAll(() => {
-    
     var sql_test = new Promise((resolve, reject) => {
         sql.connection.query('START TRANSACTION;', function(err, result, fields) {
             if (err) {
