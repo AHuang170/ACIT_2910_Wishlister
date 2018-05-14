@@ -1,15 +1,24 @@
 var steam = require("./steam")
 var sql = require("./sql_db.js")
 var gog = require("./gog.js")
-var server = require("./server.js")
 const _ = require('lodash');
 
 beforeAll(() => {
+
+    var sql_test = new Promise((resolve, reject) => {
+        sql.connection.query('START TRANSACTION;', function(err, result, fields) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(result)
+            }
+        })
+    }).then((mysql_message) => {
+        console.log(mysql_message)
+    })
+
     return steam.steam(590380).then((result) => {
         steam_object = result;
-        return sql.fetch_wishlist(60);
-    }).then((result) => {
-        db_list = result
 
         mock_steam_obj =
         {
@@ -21,15 +30,6 @@ beforeAll(() => {
             "header_image": "https://steamcdn-a.akamaihd.net/steam/apps/590380/header.jpg?t=1519989363",
             "steam_appid": 590380
         }
-    }).then((tyler) => {
-      return sql.check_email_existence('test@test.com', 'userEmail').then((validEmail) => {
-        validEmailTest = validEmail;
-      }).then((tyler) => {
-      return sql.get_uid_from_email('test@test.com').then((userID) => {
-        userIDTest = userID;
-      })
-    })
-
         mock_gog_obj_1 =
         {
             customAttributes: [],
@@ -78,11 +78,11 @@ beforeAll(() => {
             publisher: "CD PROJEKT RED",
             price: {
                 amount: "12.89",
-                baseAmount: "12.89",
-                finalAmount:"12.89",
-                isDiscounted: false,
-                discountPercentage: 0,
-                discountDifference: "0.00",
+                baseAmount: "12.00",
+                finalAmount:"6.00",
+                isDiscounted: true,
+                discountPercentage: 50,
+                discountDifference: "6.00",
                 symbol: "C$",
                 isFree: false,
                 discount: 0,
@@ -112,46 +112,85 @@ beforeAll(() => {
             isWishlistable: true
         }
 
+        mock_steam_compare_obj = {
+            price_overview: {
+                initial: "13.00",
+                discount_percent: 0,
+            },
+            name: "The Witcher: Enhanced Edition"
+        }
+
         mock_gog_game_list = [mock_gog_obj_1, mock_gog_obj_2]
     })
 })
 
 afterAll(() => {
-    // Rebase Test - 1
-    // Rebase Test - 2
+    var sql_test = new Promise((resolve, reject) => {
+        sql.connection.query('ROLLBACK;', function(err, result, fields) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(result)
+            }
+        })
+    })
+
+    sql_test.then((result) => {
+        console.log(result)
+    })
     sql.connection.end()
 })
 
 describe("Steam Tests", () => {
-  test("Receive JSON object from Steam API", () => {
-      expect(steam_object.type).
-      toBe("game")
-
-  }),
-  test("Process steam object - Game Title", () => {
-      expect(steam.process_object(mock_steam_obj)[0]).
-      toBe("Into the Breach")
-  }),
-  test("Calculte steam app price", () => {
-    expect(steam.calculate_price(10020, 50)).
-    toBe("50.10")
-  })
-})
-
-describe('SQL DB Tests', () => {
-    test("Fetch Wishlist from MySQL Database", () => {
-        expect(db_list[1].appid).
-        toBe(376520)
+    test("Receive JSON object from Steam API", () => {
+        expect(steam_object.type).
+        toBe("game")
+    }),
+    test("Process steam object - Game Title", () => {
+        expect(steam.process_object(mock_steam_obj)[0]).
+        toBe("Into the Breach")
+    }),
+    test("Calculte steam app price", () => {
+        expect(steam.calculate_price(10020, 50)).
+        toBe("50.10")
     })
 })
 
-describe('Tyler SQL_db Tests', () => {
-  test('Check if email is in database', () => {
-    expect(validEmailTest).toBe(true)
-  })
-  test('Fetch uid from input email', () => {
-    expect(userIDTest).toBe(63)
-  })
+describe('SQL DB Tests', () => {
+    test("Add user into database", () => {
+        expect(sql.insert_user('TestUser', '$2a$10$QQtyTFzmeCAYhwdMd/nnQeUbGf1TJ7kNHELHRRNMHzlFvLLB55q2O', 'testuser@gmail.com')).
+        toBeTruthy()
+    }),
+    test("Get UID from email", () => {
+        return sql.get_uid_from_email('testuser@gmail.com').then((result) => {
+            expect(result).
+            toBeGreaterThan(0)
+        })
+    }),
+    test("Insert into wishlist", () => {
+        return  sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+            sql.insert_wishlist(uid, '376520').then((result) => {
+                expect(result.affectedRows).
+                toBe(1)
+            })
+        })
+    }),
+    test("Fetch wishlist", () => {
+        return  sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+            sql.fetch_wishlist(uid).then((result) => {
+                expect(result[0].appid).
+                toBe(376520)
+            })
+        })
+    }),
+    test("Delete from wishlist", () => {
+        return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+            sql.delete_from_wishlist(uid, '376520').then((result) => {
+                expect(result.affectedRows).
+                toBe(1)
+            })
+        })
+    })
 })
 
 describe('GOG Tests', () => {
@@ -181,5 +220,17 @@ describe('GOG Tests', () => {
     test("Extract data function should return an object", () => {
         expect(_.isObject(gog.extract_data(mock_gog_obj_1))).
         toBeTruthy()
+    }),
+    test("Extract the right attributes from the object", () => {
+        expect(gog.extract_data(mock_gog_obj_1)).
+        toEqual({
+            initial: "12.89",
+            discount_percent: 0,
+            name: "The Witcher: Enhanced Edition",
+        })
+    }),
+    test("Compare steam and gog prices", () => {
+        expect(steam.compare_prices(mock_steam_compare_obj, mock_gog_obj_1)).
+        toBe("gog")
     })
 })

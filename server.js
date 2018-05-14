@@ -58,7 +58,7 @@ hbs.registerHelper('apps', (list) => {
         if (titleList[item][2] === 'Discount 0%') {
             out = `${out}<div class='game shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='Steam_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
         } else {
-            out = `${out}<div class='game_sale shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img id='wishlistlogo' src='Steam_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
+            out = `${out}<div class='game_sale shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='Steam_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
         }
     }
     return out;
