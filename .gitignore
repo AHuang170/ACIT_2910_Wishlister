@@ -1,9 +1,6 @@
 .gitignore
 config.js
 game_filter.js
-game_filter.js
-node_modules/*
-coverage/*
 node_modules
 coverage
 coverage/clover.xml

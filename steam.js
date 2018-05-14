@@ -98,6 +98,18 @@ var calculate_price = (initial_price, disct_percentage) => {
   return (initial_price * (1 - (disct_percentage / 100)) / 100).toFixed(2);
 }
 
+function compare_prices(steam_obj, gog_obj){
+  var winner = '';
+  var gog_price = parseInt(gog_obj.price.baseAmount) * (1 - (gog_obj.price.discountPercentage / 100));
+  var steam_price = parseInt(steam_obj.price_overview.initial) * (1 - (steam_obj.price_overview.discount_percent / 100));
+  if(gog_price < steam_price){
+    winner = "gog"
+  }else{
+    winner = "steam"
+  }
+  return winner
+}
+
 module.exports = {
-  steam, game_loop, process_object, calculate_price
+  steam, game_loop, process_object, calculate_price, compare_prices
 }
