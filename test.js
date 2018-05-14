@@ -1,14 +1,25 @@
 var steam = require("./steam")
 var sql = require("./sql_db.js")
 var gog = require("./gog.js")
-var server = require("./server.js")
 const _ = require('lodash');
 
 beforeAll(() => {
+
+    var sql_test = new Promise((resolve, reject) => {
+        sql.connection.query('START TRANSACTION;', function(err, result, fields) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(result)
+            }
+        })
+    }).then((mysql_message) => {
+        console.log(mysql_message)
+    })
+
     return steam.steam(590380).then((result) => {
         steam_object = result;
-        return sql.fetch_wishlist(60);
-    }).then((result) => {
+
         mock_steam_obj =
         {
             "name": "Into the Breach",
@@ -114,8 +125,19 @@ beforeAll(() => {
 })
 
 afterAll(() => {
-    // Rebase Test - 1
-    // Rebase Test - 2
+    var sql_test = new Promise((resolve, reject) => {
+        sql.connection.query('ROLLBACK;', function(err, result, fields) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(result)
+            }
+        })
+    })
+
+    sql_test.then((result) => {
+        console.log(result)
+    })
     sql.connection.end()
 })
 
