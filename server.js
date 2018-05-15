@@ -297,6 +297,7 @@ app.get('/logout', (request, response) => {
 // Deletes items from user's wishlist
 app.get('/removeFromWishlist', (request, response) => {
     var appid = request.query.a;
+    console.log(`APPID is:${appid}`);
     var uid = request.session.uid;
 
     sql_db_function.delete_from_wishlist(uid, appid).then((result) => {

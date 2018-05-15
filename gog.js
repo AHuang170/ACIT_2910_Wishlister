@@ -24,7 +24,7 @@ var gog_api = (game_name) => {
 var isolate_game_obj = (game_name, game_list) => {
   var game_obj = undefined;
   for(i in game_list){
-    console.log('compare',game_list[i].title, game_name)
+    // console.log('compare',game_list[i].title, game_name)
     if(game_list[i].title.toLowerCase() == game_name.toLowerCase()){
 
       game_obj = Object.assign({},game_list[i]);
