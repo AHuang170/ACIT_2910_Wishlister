@@ -11,8 +11,8 @@ var gog_api = (game_name) => {
         url: `https://embed.gog.com/games/ajax/filtered?mediaType=game&search=${game_name}`,
         json: true
     }, (error, response, body) => {
-        if (error) {
-            reject(error);
+        if (error || response.statusCode == 400) {
+            resolve(undefined);
         } else {
             var gameList = Object.assign({},body.products);
             resolve(gameList);
