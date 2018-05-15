@@ -395,7 +395,9 @@ app.post('/createUser', (request, response) => {
     }).catch((error) => {
         serverError(response, error);
     });
-  })
+  }).catch((error) => {
+      serverError(response, error);
+  });
 })
 
 // Add game to wishlist and store result in MySQL database for current user
@@ -469,7 +471,10 @@ app.post('/passwordRecovery', (request, response) => {
               var token = num.toString('16');
               token = token + token + token;
               token = token.split('').sort(function(){return 0.5-Math.random()}).join('');
+              uid = uid;
 
+        // updating db with token
+        sql_db_function.update_token(uid, token).then((uid) => {
 
               //sending the email
       var nodemailer = require('nodemailer');
@@ -484,7 +489,7 @@ app.post('/passwordRecovery', (request, response) => {
         from: 'wishlisterhelp@gmail.com',
         to: recovery_email,
         subject: 'Password Recovery for Wishlister',
-        text: 'http://localhost:8080/passwordRecoveryEntry?id='+uid+'token='+token
+        text: 'http://localhost:8080/passwordRecoveryEntry?id='+uid+'?token='+token
       };
 
       transporter.sendMail(mailOptions, function(error, info){
@@ -501,7 +506,12 @@ app.post('/passwordRecovery', (request, response) => {
           });
         }
       });
-    })
+    }).catch((error) => {
+        serverError(response, error);
+    });
+  }).catch((error) => {
+      serverError(response, error);
+  });
       }
       else {
             response.render('passwordRecovery.hbs', {
@@ -511,6 +521,54 @@ app.post('/passwordRecovery', (request, response) => {
       }
     })
   });
+
+// function to change the users password after checking the token provided and token expiry is valid
+app.post('/passwordRecoveryChange', (request, response) => {
+  var new_pass = request.body.rec_pass;
+  var uid = 1;
+  var token = '1';
+  var currentTime = 'databaseTime';
+  var tokenTime = 'tokenTime';
+  var linked = request.query.id;
+  if (linked.indexOf('?token=') != -1) {
+      linked = linked.split('?token=');
+      uid = linked[0];
+      token = linked[1];
+  }
+
+
+
+
+
+  sql_db_function.check_token(uid, token, currentTime, tokenTime).then((queryResult) =>  {
+
+     if (queryResult)
+     {
+
+//hash, render, db function
+  bcrypt.hash(new_pass, saltRounds).then((hash) => {
+      return sql_db_function.update_password(uid, hash);
+  }).then((result)=>{
+    if(result){
+      response.render('passwordRecovered.hbs', {
+          noLogIn: true
+      });
+
+    }
+      }).catch((error) => {
+        serverError(response, error);
+      });
+    }
+
+    else {
+      response.render('passwordRecoveryEntry.hbs', {
+          tokenInvalid: true
+      });
+    }
+  }).catch((error) => {
+    serverError(response, error);
+});
+});
 
 // Handle all other paths and render 404 error page
 app.use((request, response) => {
