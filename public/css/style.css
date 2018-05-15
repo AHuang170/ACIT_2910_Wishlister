@@ -229,6 +229,7 @@ header {
 
 /* --------------------------------- Search --------------------------------- */
 #search {
+    z-index: 1;
 	padding:15px;
 	/* background-color:rgb(255,255,255); */
 }
@@ -377,6 +378,15 @@ header {
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 20px;
   grid-auto-rows: minmax(176px, auto);
+}
+
+#bullyhunter{
+    display: none;
+    position: fixed;
+    object-fit: cover;
+    height: 100vh;
+    width: 100vw;
+    top: 0px;
 }
 
 .search {
