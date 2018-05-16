@@ -9,31 +9,38 @@
             var yesNo = document.createElement("div"),
                 text = document.createElement("p"),
                 a1 = document.createElement("a"),
+                div1 = document.createElement("div"),
                 yes = document.createElement("button"),
                 a2 = document.createElement("a"),
+                div2 = document.createElement("div"),
                 no = document.createElement("button");
         
             document.getElementById(api).appendChild(yesNo);
             yesNo.appendChild(text);
-            yesNo.appendChild(a1);
+            yesNo.appendChild(div1);
+            div1.appendChild(a1);
             a1.appendChild(yes);
-            yesNo.appendChild(a2);
+            yesNo.appendChild(div2);
+            div2.appendChild(a2);
             a2.appendChild(no);
         
             yesNo.className = "overWish shadow";
         
             text.innerHTML = "Are you sure you want to remove this game from your wishlist?";
             text.className = "textSMS";
-        
-            yes.className = "btn btn-outline-secondary";
+            
+            div1.id = "leftHanger";
+            yes.className = "btn";
             a1.href="/removeFromWishlist?a="+api;
+            a1.id = "yes"
             yes.innerHTML = "Yes";
-            yes.id = "yes-btn";
-        
+            yes.id = "yes-btn"
+            
+            div2.id = "rightHanger";
             no.className = "btn btn-outline-secondary";
             a2.href="/";
+            a2.id = "no"
             no.innerHTML = "No";
-            no.id = "no-btn";
         }
     </script>
 </div>
