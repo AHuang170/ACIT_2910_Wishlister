@@ -1,3 +1,8 @@
+// The sql functions here don't need to be tested since testing conneciton.query really isn't a unit test for us
+// Options:
+//          1. Don't write unit tests for the connection.query functions
+//          2. Create mock database and use it to test the functions
+
 /**
  * Wishlist modules
  * @module ./sql_db
