@@ -151,26 +151,27 @@ var calculate_price = (initial_price, disct_percentage) => {
 }
 
 function compare_prices(steam_obj, gog_obj){
-  var winner = '';
-  if(gog_obj != undefined){
-    var gog_price = parseInt(gog_obj.initial * (1 - (gog_obj.discount_percent / 100)));
-    var steam_price = parseInt(steam_obj.initial) * (1 - (steam_obj.discount_percent / 100));
-    // console.log(gog_price, steam_price)
-    if(gog_price < steam_price){
-      winner = Object.assign({},gog_obj)
-      winner['store'] = 'gog'
-      winner['steam_thumb']  = steam_obj.steam_thumb
-      // console.log(winner)
-      winner['appid'] = steam_obj.appid
-    }else{
-      winner = Object.assign({},steam_obj)
-      winner['store'] = 'steam'
+    console.log(`>>>>>Steam:\n${JSON.stringify(steam_obj, undefined, 2)}`)
+    console.log(`>>>>>GOG:\n${JSON.stringify(gog_obj, undefined, 2)}`)
+    var winner = '';
+    if(gog_obj != undefined){
+        var gog_price = parseInt(gog_obj.initial) * (1 - (gog_obj.discount_percent / 100));
+        var steam_price = parseInt(steam_obj.initial) * (1 - (steam_obj.discount_percent / 100));
+        if(gog_price < steam_price){
+            winner = Object.assign({},gog_obj)
+            winner['store'] = 'gog'
+            winner['steam_thumb']  = steam_obj.steam_thumb
+            // console.log(winner)
+            winner['appid'] = steam_obj.appid
+        }else{
+            winner = Object.assign({},steam_obj)
+            winner['store'] = 'steam'
+        }
+    } else{
+        winner = Object.assign({},steam_obj)
+        winner['store'] = 'steam'
     }
-  } else{
-    winner = Object.assign({},steam_obj)
-    winner['store'] = 'steam'
-  }
-  return winner
+    return winner
 }
 
 module.exports = {

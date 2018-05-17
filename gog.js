@@ -14,7 +14,7 @@ var gog_api = (game_name) => {
         if (error || response.statusCode == 400) {
             resolve(undefined);
         } else {
-            var gameList = Object.assign({},body.products);
+            var gameList = body.products.slice();
             resolve(gameList);
           }
         });
