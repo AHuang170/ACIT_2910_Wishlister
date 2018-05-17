@@ -175,5 +175,6 @@ function compare_prices(steam_obj, gog_obj){
 }
 
 module.exports = {
-  steam, game_loop, process_object, calculate_price, compare_prices, extract_steam_data
+  steam, game_loop, process_object, calculate_price, compare_prices,
+  extract_steam_data, get_game_object
 }

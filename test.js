@@ -1,4 +1,4 @@
-var server = require("./server.js")
+var server = require("./server_function.js")
 var steam = require("./steam.js")
 var sql = require("./sql_db.js")
 var gog = require("./gog.js")
@@ -103,7 +103,7 @@ var mock_steam_compare_obj = {
     discount_percent: 0,
     name: "The Witcher: Enhanced Edition",
     steam_thumb: 'img_url',
-    appid: '1111'
+    appid: 1111
 };
 
 var mock_gog_compare_obj = {
@@ -150,11 +150,6 @@ beforeAll(() => {
     }).then((mysql_message) => {
         console.log(mysql_message)
     })
-
-    return steam.steam(590380).then((result) => {
-        steam_object = Object.assign({}, result);
-
-    })
 })
 
 afterAll(() => {
@@ -176,8 +171,11 @@ afterAll(() => {
 
 describe("Steam Tests", () => {
     test("Receive JSON object from Steam API", () => {
-        expect(steam_object.type).
-        toBe("game")
+        return steam.steam(590380).then((result) => {
+            steam_object = Object.assign({}, result);
+            expect(steam_object.type).
+            toBe("game")
+        })
     }),
     test("Process steam object - Game Title", () => {
         expect(steam.process_object(mock_steam_obj)[0]).
@@ -186,6 +184,36 @@ describe("Steam Tests", () => {
     test("Calculte steam app price", () => {
         expect(steam.calculate_price(10020, 50)).
         toBe("50.10")
+    }),
+    test("Test object comparison", () => {
+        return steam.get_game_object(570).then((result) => {
+            expect(result.store).
+            toBe("steam")
+        })
+    }),
+    test("Steam object data extraction test", () => {
+        expect(steam.extract_steam_data(mock_steam_obj)).
+        toEqual({
+            name: "Into the Breach",
+            initial: 1749,
+            discount_percent: 0,
+            steam_thumb: "https://steamcdn-a.akamaihd.net/steam/apps/590380/header.jpg?t=1519989363",
+            appid: 590380
+        })
+    }),
+    test("Test object to array conversion", () => {
+        expect(steam.process_object(mock_steam_compare_obj)).
+        toEqual([
+            "The Witcher: Enhanced Edition",
+            "Current Price: $13.00",
+            "Discount 0%",
+            "<img class=\"wishThumb shadow\" src=\"img_url\" />",
+            1111
+        ])
+    }),
+    test("Compare steam and gog prices", () => {
+        expect((steam.compare_prices(mock_steam_compare_obj, mock_gog_compare_obj)).store).
+        toBe("gog")
     })
 })
 
@@ -286,14 +314,86 @@ describe('GOG Tests', () => {
             discount_percent: 0,
             name: "The Witcher: Enhanced Edition",
         })
-    }),
-    test("Compare steam and gog prices", () => {
-        expect((steam.compare_prices(mock_steam_compare_obj, mock_gog_compare_obj)).store).
-        toBe("gog")
     })
 })
 
 describe("Server Tests", () => {
+    test("Test serverError undefined input", () => {
+        expect(server.serverError(undefined, "Internal Server Error")).
+        toBeFalsy()
+    }),
+    test("Username check for short name", () => {
+        expect(server.check_username_length("short")).
+        toBeTruthy()
+    }),
+    test("Username check for long name", () => {
+        expect(server.check_username_length("looong")).
+        toBeFalsy()
+    }),
+    test("Username space check with spaces", () => {
+        expect(server.check_username_spaces("spa c e")).
+        toBeTruthy()
+    }),
+    test("Username space check without spaces", () => {
+        expect(server.check_username_spaces("space")).
+        toBeFalsy()
+    }),
+    test("Password check for short password", () => {
+        expect(server.check_password_length("*******")).
+        toBeTruthy()
+    }),
+    test("Password check for long password", () => {
+        expect(server.check_password_length("********")).
+        toBeFalsy()
+    }),
+    test("Password space check with spaces", () => {
+        expect(server.check_password_spaces(" *** *** **")).
+        toBeTruthy()
+    }),
+    test("Password space check without spaces", () => {
+        expect(server.check_password_spaces("********")).
+        toBeFalsy()
+    }),
+    test("Password match check with matching inputs", () => {
+        expect(server.check_matching_passwords("thesame", "thesame")).
+        toBeFalsy()
+    }),
+    test("Password space check with non matching inputs", () => {
+        expect(server.check_matching_passwords("different", "notthesame")).
+        toBeTruthy()
+    }),
+    test("Empty input test with 1 empty input 1", () => {
+        expect(server.check_for_empty_fields("", "**********")).
+        toBeTruthy()
+    }),
+    test("Empty input test with 1 empty input 2", () => {
+        expect(server.check_for_empty_fields("**********", "")).
+        toBeTruthy()
+    }),
+    test("Empty input test with 0 empty input", () => {
+        expect(server.check_for_empty_fields("greatname", "**********")).
+        toBeFalsy()
+    }),
+    test("Test final price calculation", () => {
+        expect(server.get_final_price(10000, 73)).
+        toBe("27.00")
+    }),
+    test("Max item count test with small input", () => {
+        expect(server.set_max_items(5)).
+        toBe(5)
+    }),
+    test("Max item count test with large input", () => {
+        expect(server.set_max_items(999999999)).
+        toBe(10)
+    }),
+    test("Email validation test with good input", () => {
+        expect(server.validateEmail("theEYE_<()>_SEESyou@gmail.com")).
+        toBeTruthy()
+    }),
+    test("Email validation test with bad input", () => {
+        expect(server.validateEmail("inital_name_number@gmail.com")).
+        toBeFalsy()
+    }),
     test("Sort wishlist by name", () => {
         expect(server.sort_by_name(mock_request_session_wishlist)).
         toEqual([
