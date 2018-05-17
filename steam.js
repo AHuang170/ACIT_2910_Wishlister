@@ -151,8 +151,8 @@ var calculate_price = (initial_price, disct_percentage) => {
 }
 
 function compare_prices(steam_obj, gog_obj){
-    console.log(`>>>>>Steam:\n${JSON.stringify(steam_obj, undefined, 2)}`)
-    console.log(`>>>>>GOG:\n${JSON.stringify(gog_obj, undefined, 2)}`)
+    // console.log(`>>>>>Steam:\n${JSON.stringify(steam_obj, undefined, 2)}`)
+    // console.log(`>>>>>GOG:\n${JSON.stringify(gog_obj, undefined, 2)}`)
     var winner = '';
     if(gog_obj != undefined){
         var gog_price = parseInt(gog_obj.initial) * (1 - (gog_obj.discount_percent / 100));
