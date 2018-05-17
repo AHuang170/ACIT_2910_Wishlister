@@ -1,4 +1,5 @@
-var steam = require("./steam")
+var server = require("./server.js")
+var steam = require("./steam.js")
 var sql = require("./sql_db.js")
 var gog = require("./gog.js")
 const _ = require('lodash');
@@ -112,6 +113,30 @@ var mock_gog_compare_obj = {
 };
 
 var mock_gog_game_list = [mock_gog_obj_1, mock_gog_obj_2];
+
+var mock_request_session_wishlist = [
+    [
+        'S.T.A.L.K.E.R.: Call of Pripyat',
+        'Current Price: $6.45',
+        'Discount 75%',
+        'html stuff',
+        41700
+    ],
+    [
+        'David.',
+        'Current Price: $2.19',
+        'Discount 0%',
+        'html stuff',
+        346180
+    ],
+    [
+        'MachiaVillain',
+        'Current Price: $17.59',
+        'Discount 20%',
+        'html stuff',
+        555510
+    ]
+];
 
 beforeAll(() => {
     var sql_test = new Promise((resolve, reject) => {
@@ -265,5 +290,86 @@ describe('GOG Tests', () => {
     test("Compare steam and gog prices", () => {
         expect((steam.compare_prices(mock_steam_compare_obj, mock_gog_compare_obj)).store).
         toBe("gog")
+    })
+})
+
+describe("Server Tests", () => {
+    test("Sort wishlist by name", () => {
+        expect(server.sort_by_name(mock_request_session_wishlist)).
+        toEqual([
+            [
+                'David.',
+                'Current Price: $2.19',
+                'Discount 0%',
+                'html stuff',
+                346180
+            ],
+            [
+                'MachiaVillain',
+                'Current Price: $17.59',
+                'Discount 20%',
+                'html stuff',
+                555510
+            ],
+            [
+                'S.T.A.L.K.E.R.: Call of Pripyat',
+                'Current Price: $6.45',
+                'Discount 75%',
+                'html stuff',
+                41700
+            ]
+        ])
+    }),
+    test("Sort wishlist by price", () => {
+        expect(server.sort_by_price(mock_request_session_wishlist)).
+        toEqual([
+            [
+                'David.',
+                'Current Price: $2.19',
+                'Discount 0%',
+                'html stuff',
+                346180
+            ],
+            [
+                'S.T.A.L.K.E.R.: Call of Pripyat',
+                'Current Price: $6.45',
+                'Discount 75%',
+                'html stuff',
+                41700
+            ],
+            [
+                'MachiaVillain',
+                'Current Price: $17.59',
+                'Discount 20%',
+                'html stuff',
+                555510
+            ]
+        ])
+    }),
+    test("Sort wishlist by sale status", () => {
+        expect(server.sort_by_sale(mock_request_session_wishlist)).
+        toEqual([
+            [
+                'MachiaVillain',
+                'Current Price: $17.59',
+                'Discount 20%',
+                'html stuff',
+                555510
+            ],
+            [
+                'S.T.A.L.K.E.R.: Call of Pripyat',
+                'Current Price: $6.45',
+                'Discount 75%',
+                'html stuff',
+                41700
+            ],
+            [
+                'David.',
+                'Current Price: $2.19',
+                'Discount 0%',
+                'html stuff',
+                346180
+            ]
+        ])
     })
 })

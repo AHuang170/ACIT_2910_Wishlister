@@ -88,17 +88,18 @@ app.get('/', (request, response) => {
 
     sql_db_function.fetch_wishlist(target_id).then((queryResult) => {
 
-      return steam_function.game_loop(queryResult);
+        return steam_function.game_loop(queryResult);
 
     }).then((result) => {
 
-      request.session.wishlist = result;
-      response.render('index.hbs', {
-          gameList: request.session.wishlist,
-          year: new Date().getFullYear(),
-          loggedIn: request.session.loggedIn,
-          userName: request.session.userName,
-          details: 'Game Search'
+        request.session.wishlist = result;
+
+        response.render('index.hbs', {
+            gameList: request.session.wishlist,
+            year: new Date().getFullYear(),
+            loggedIn: request.session.loggedIn,
+            userName: request.session.userName,
+            details: 'Game Search'
 
       });
 
@@ -183,6 +184,7 @@ app.post('/', (request, response) => {
 
 // Using the appid of a found game, query the steam API and display result
 app.get('/fetchDetails', (request, response) => {
+    console.log(request.session.wishlist)
     var index = _.findIndex(gameobj['applist'].apps, function(o) {
         return o.name == request.query.n;
     });
@@ -587,6 +589,7 @@ var serverError = (response, errorMsg) => {
     console.log(errorMsg);
     response.status(500);
     response.render('500.hbs');
+    return "Done";
 }
 
 var check_username_length = (input_user_name) => {
@@ -631,4 +634,8 @@ var validateEmail = (email) => {
   var valid = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   error = !valid.test(email);
   return error;
+}
+
+module.exports = {
+
 }
