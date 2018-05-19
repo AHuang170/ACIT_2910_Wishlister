@@ -1,3 +1,8 @@
+// The sql functions here don't need to be tested since testing conneciton.query really isn't a unit test for us
+// Options:
+//          1. Don't write unit tests for the connection.query functions
+//          2. Create mock database and use it to test the functions
+
 /**
  * Wishlist modules
  * @module ./sql_db
@@ -12,7 +17,7 @@ const request = require('request');
  * Config.js file for the server
  */
 const config = require('./config.js');
-var mysql = config.mysql
+var mysql = config.mysql;
 
 /**
  * Function from config.js
@@ -57,28 +62,28 @@ connection.query(sql, function(err, rows, fields) {
  * @returns {Promise} Promise to query from the database
  */
 var fetch_wishlist = (target_id) => {
-    /**
-     * Promise to query from database
-     * @returns {Promise.resolve} A list of the query results
-     * @returns {Promise.reject} Returns the err variable
-     */
-    return new Promise((resolve, reject) => {
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} A list of the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise((resolve, reject) => {
 
-        var query = `SELECT * FROM wishlist WHERE uid = ${target_id}`;
-        /**
-         * @param query - Sql command used to query from the table
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} queryResult - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-        connection.query(query, function(err, queryResult, fields) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(queryResult);
-            }
-        });
+    var query = `SELECT * FROM wishlist WHERE uid = ${target_id}`;
+    /**
+     * @param query - Sql command used to query from the table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(query, function(err, queryResult, fields){
+      if(err){
+        reject(err);
+      }else{
+        resolve(queryResult);
+      }
     });
+  });
 }
 
 /**
@@ -89,27 +94,27 @@ var fetch_wishlist = (target_id) => {
  * @returns {Promise} Promise to query from the database
  */
 var fetch_wishlist_duplicates = (uid, appid) => {
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} A list of the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var chkQuery = `SELECT * FROM wishlist WHERE uid = ${uid} AND appid = ${appid}`;
     /**
-     * Promise to query from database
-     * @returns {Promise.resolve} A list of the query results
-     * @returns {Promise.reject} Returns the err variable
+     * @param chkquery - Sql command used to query from the table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
      */
-    return new Promise((resolve, reject) => {
-        var chkQuery = `SELECT * FROM wishlist WHERE uid = ${uid} AND appid = ${appid}`;
-        /**
-         * @param chkquery - Sql command used to query from the table
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} queryResult - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-        connection.query(chkQuery, function(err, result, fields) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
-            }
-        });
+    connection.query(chkQuery, function(err, result, fields) {
+        if(err){
+          reject(err);
+        }else{
+          resolve(result);
+        }
     });
+  });
 }
 
 /**
@@ -120,28 +125,28 @@ var fetch_wishlist_duplicates = (uid, appid) => {
  * @returns {Promise} Promise to query from the database
  */
 var insert_wishlist = (uid, appid) => {
-    /**
-     * Promise to query from database
-     * @returns {Promise.resolve} A list of the query results
-     * @returns {Promise.reject} Returns the err variable
-     */
-    return new Promise((resolve, reject) => {
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} A list of the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
 
-        var addQuery = `INSERT INTO wishlist (uid, appid) VALUES (${uid}, ${appid})`;
-        /**
-         * @param addquery - Sql command used to insert into wishlist table
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} queryResult - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-        connection.query(addQuery, function(err, result, fields) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
-            }
-        });
+    var addQuery = `INSERT INTO wishlist (uid, appid) VALUES (${uid}, ${appid})`;
+    /**
+     * @param addquery - Sql command used to insert into wishlist table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(addQuery, function(err, result, fields) {
+        if(err){
+          reject(err);
+        }else{
+          resolve(result);
+        }
     });
+  });
 }
 
 /**
@@ -152,28 +157,28 @@ var insert_wishlist = (uid, appid) => {
  * @returns {Promise} Promise to query from the database
  */
 var delete_from_wishlist = (uid, appid) => {
-    /**
-     * Promise to query from database
-     * @returns {Promise.resolve} A list of the query results
-     * @returns {Promise.reject} Returns the err variable
-     */
-    return new Promise((resolve, reject) => {
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} A list of the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
 
-        var deleteQuery = `DELETE FROM wishlist WHERE (uid=${uid} AND appid=${appid})`;
-        /**
-         * @param addquery - Sql command used to insert into wishlist table
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} queryResult - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-        connection.query(deleteQuery, function(err, result, fields) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
-            }
-        });
+    var deleteQuery = `DELETE FROM wishlist WHERE (uid=${uid} AND appid=${appid})`;
+    /**
+     * @param addquery - Sql command used to insert into wishlist table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(deleteQuery, function(err, result, fields) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
     });
+  });
 }
 
 /**
@@ -184,28 +189,28 @@ var delete_from_wishlist = (uid, appid) => {
  */
 var fetch_user_detail = (input_name) => {
 
-    /**
-     * Promise to query from database
-     * @returns {Promise.resolve} A list of the query results
-     * @returns {Promise.reject} Returns the err variable
-     */
-    return new Promise((resolve, reject) => {
-        var query = `SELECT * FROM users WHERE username = '${input_name}'`;
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} A list of the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var query = `SELECT * FROM users WHERE username = '${input_name}'`;
 
-        /**
-         * @param query - Sql command used to query from users table
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} queryResult - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-        connection.query(query, function(err, queryResult, fields) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(queryResult);
-            }
-        });
+    /**
+     * @param query - Sql command used to query from users table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(query, function(err, queryResult, fields){
+      if(err){
+        reject(err);
+      }else{
+        resolve(queryResult);
+      }
     });
+  });
 }
 
 /**
@@ -218,29 +223,29 @@ var fetch_user_detail = (input_name) => {
  */
 var insert_user = (input_user_name, hash, input_user_email) => {
 
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var addQ = `INSERT INTO users (uid, username, password, email) VALUES (NULL, '${input_user_name}', '${hash}', '${input_user_email}');`;
+
     /**
-     * Promise to query from database
-     * @returns {Promise.resolve} Returns the query results
-     * @returns {Promise.reject} Returns the err variable
+     * @param addq - Sql command to insert into users table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} queryResult - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
      */
-    return new Promise((resolve, reject) => {
-        var addQ = `INSERT INTO users (uid, username, password, email) VALUES (NULL, '${input_user_name}', '${hash}', '${input_user_email}');`;
 
-        /**
-         * @param addq - Sql command to insert into users table
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} queryResult - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-
-        connection.query(addQ, function(err, result, fields) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(true);
-            }
-        });
+    connection.query(addQ, function(err, result, fields) {
+        if (err){
+          reject(err);
+        }else{
+          resolve(true);
+        }
     });
+  });
 }
 
 /**
@@ -255,220 +260,203 @@ var insert_user = (input_user_name, hash, input_user_email) => {
 
 var check_user_existence = (input_user_name, resultName) => {
 
-    /**
-     * Promise to query from database
-     * @returns {Promise.resolve} Returns the query results
-     * @returns {Promise.reject} Returns the err variable
-     */
-    return new Promise((resolve, reject) => {
-        var nameQuery = `SELECT count(*) AS ${resultName} FROM users WHERE username = '${input_user_name}'`;
-        var queryResult = false;
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var nameQuery = `SELECT count(*) AS ${resultName} FROM users WHERE username = '${input_user_name}'`;
+    var queryResult = false;
 
-        /**
-         * @param nameQuery - Sql command to query users table
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} result - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-        connection.query(nameQuery, function(err, result, fields) {
-            if (err) {
-                reject(err);
-            }
-            if (result[0][resultName] != 0) {
-                queryResult = true;
-            }
-            resolve(queryResult);
-        });
-    })
+    /**
+     * @param nameQuery - Sql command to query users table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} result - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
+     */
+    connection.query(nameQuery, function(err, result, fields) {
+        if (err) {
+            reject(err);
+        }
+        if (result[0][resultName] != 0) {
+            queryResult = true;
+        }
+        resolve(queryResult);
+    });
+  })
 }
 
 var check_email_existence = (input_user_email, emailName) => {
 
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var emailSearch = `SELECT count(*) AS ${emailName} FROM users WHERE email = '${input_user_email}'`;
+    var queryResult = false;
+
     /**
-     * Promise to query from database
-     * @returns {Promise.resolve} Returns the query results
-     * @returns {Promise.reject} Returns the err variable
+     * @param nameQuery - Sql command to query users table
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} result - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
      */
-    return new Promise((resolve, reject) => {
-        var emailSearch = `SELECT count(*) AS ${emailName} FROM users WHERE email = '${input_user_email}'`;
-        var queryResult = false;
+    connection.query(emailSearch, function(err, result, fields) {
+        if (err) {
+            reject(err);
+        }
 
-        /**
-         * @param nameQuery - Sql command to query users table
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} result - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-        connection.query(emailSearch, function(err, result, fields) {
-            if (err) {
-                reject(err);
-            }
+        if (result[0][emailName] >= 1) {
+            queryResult = true;
 
-            if (result[0][emailName] >= 1) {
-                queryResult = true;
+        }
 
-            }
-
-            resolve(queryResult);
-        });
-    })
+        resolve(queryResult);
+    });
+  })
 }
 
 var get_uid_from_email = (input_user_email) => {
 
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var emailSearch = `SELECT * FROM users WHERE email = '${input_user_email}'`;
+    var queryResult = 'An error has occured..';
+
     /**
-     * Promise to query from database
-     * @returns {Promise.resolve} Returns the query results
-     * @returns {Promise.reject} Returns the err variable
+     * @param input_user_email - the email entered by the user
+     * @param emailSearch - SQL command to get the uid of the first user to register with that email (in case they registered before email was checked for duplicates)
+     * @param queryResult - UID of User
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} result - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
      */
-    return new Promise((resolve, reject) => {
-        var emailSearch = `SELECT * FROM users WHERE email = '${input_user_email}'`;
-        var queryResult = 'An error has occured..';
+    connection.query(emailSearch, function(err, result, fields) {
+        if (err) {
+            reject(err);
+        }
 
-        /**
-         * @param input_user_email - the email entered by the user
-         * @param emailSearch - SQL command to get the uid of the first user to register with that email (in case they registered before email was checked for duplicates)
-         * @param queryResult - UID of User
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} result - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-        connection.query(emailSearch, function(err, result, fields) {
-            if (err) {
-                reject(err);
-            }
-
-            queryResult = [result[0]['uid'], result[0]['username']];
-            resolve(queryResult);
-        });
-    })
+        queryResult = result[0]['uid'];
+        current_uid = queryResult
+        resolve(queryResult);
+    });
+  })
 }
+
 
 var update_password = (uid, new_password_hash) => {
 
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var changePassword = `UPDATE users SET users.password='${new_password_hash}', users.passwordTokenExpiry=(now()) WHERE uid=${uid};`;
+
     /**
-     * Promise to query from database
-     * @returns {Promise.resolve} Returns the query results
-     * @returns {Promise.reject} Returns the err variable
+     * @param uid - Sql command to query users table
+     * @param new_password_hash - Hashed password entered by user
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} result - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
      */
-    return new Promise((resolve, reject) => {
-        var changePassword = `UPDATE users SET users.password='${new_password_hash}', users.passwordTokenExpiry=(now()) WHERE uid=${uid};`;
-        var query = `SELECT * FROM users WHERE uid = '${uid}'`;
-        /**
-         * @param uid - Sql command to query users table
-         * @param new_password_hash - Hashed password entered by user
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} result - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-        connection.query(changePassword, function(err, result, fields) {
-            if (err) {
-                reject(err);
-            } else {
+    connection.query(changePassword, function(err, result, fields) {
+        if (err) {
+            reject(err);
+        }
+        else {
+          resolve(true);
+        }
 
-                connection.query(query, function(err, result, fields) {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(result);
-                    }
-                });
-            }
-
-        });
-    })
+    });
+  })
 }
 
 var update_token = (uid, token) => {
 
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var updateTokens = `UPDATE users SET users.passwordResetToken='${token}', users.passwordTokenExpiry=(now() + INTERVAL 5 MINUTE) WHERE uid=${uid};`;
+
     /**
-     * Promise to query from database
-     * @returns {Promise.resolve} Returns the query results
-     * @returns {Promise.reject} Returns the err variable
+     * @param uid - uid of user whose password is being updated
+     * @param token - token generated by server
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} result - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
      */
-    return new Promise((resolve, reject) => {
-        var updateTokens = `UPDATE users SET users.passwordResetToken='${token}', users.passwordTokenExpiry=(now() + INTERVAL 5 MINUTE) WHERE uid=${uid};`;
+    connection.query(updateTokens, function(err, result, fields) {
+        if (err) {
+            reject(err);
+        }
+        else {
+          resolve(uid);
+        }
 
-        /**
-         * @param uid - uid of user whose password is being updated
-         * @param token - token generated by server
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} result - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-        connection.query(updateTokens, function(err, result, fields) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(uid);
-            }
-
-        });
-    })
+    });
+  })
 }
 
 var check_token = (uid, token, currentTime, tokenTime) => {
+  /**
+   * Promise to query from database
+   * @returns {Promise.resolve} Returns the query results
+   * @returns {Promise.reject} Returns the err variable
+   */
+  return new Promise ((resolve, reject) => {
+    var checkToken = `SELECT passwordTokenExpiry AS ${tokenTime}, now() AS ${currentTime} FROM users WHERE uid=${uid} and passwordResetToken='${token}';`;
     /**
-     * Promise to query from database
-     * @returns {Promise.resolve} Returns the query results
-     * @returns {Promise.reject} Returns the err variable
+     * @param uid - uid pulled from users link
+     * @param token - token pulled from users link
+     * @param {requestCallback} err - error message from Database
+     * @param {requestCallback} result - result of the query
+     * @param {requestCallback} fields - Column labels that's not used
      */
-    return new Promise((resolve, reject) => {
-        var checkToken = `SELECT passwordTokenExpiry AS ${tokenTime}, now() AS ${currentTime} FROM users WHERE uid=${uid} and passwordResetToken='${token}';`;
-        /**
-         * @param uid - uid pulled from users link
-         * @param token - token pulled from users link
-         * @param {requestCallback} err - error message from Database
-         * @param {requestCallback} result - result of the query
-         * @param {requestCallback} fields - Column labels that's not used
-         */
-        connection.query(checkToken, function(err, result, fields) {
-            if (err) {
-                reject(err);
-            } else {
+    connection.query(checkToken, function(err, result, fields) {
+        if (err) {
+            reject(err);
+        }
+        else {
 
-                // console.log(result);
-                // console.log(result[0]);
-                if (result.length > 0) {
+          // console.log(result);
+          // console.log(result[0]);
+          if (result.length > 0)
+          {
 
-                    // console.log(result);
-                    // console.log(result[0][tokenTime]);
-                    // console.log(result[0][currentTime]);
+          // console.log(result);
+          // console.log(result[0][tokenTime]);
+          // console.log(result[0][currentTime]);
 
-                    if (result[0][tokenTime] > result[0][currentTime]) {
-                        resolve(true);
-                    }
-                } else {
-                    resolve(false);
-                }
+          if (result[0][tokenTime] > result[0][currentTime])
+          {
+            resolve(true);
+          }
+        }
+          else {
+            resolve(false);
+          }
 
-            }
+        }
 
-        });
-    })
+    });
+  })
 }
 
 module.exports = {
-<<<<<<< HEAD
   fetch_wishlist, fetch_wishlist_duplicates, insert_wishlist, fetch_user_detail,
   insert_user, check_user_existence, check_email_existence, delete_from_wishlist,
   get_uid_from_email, connection, current_uid, update_password, update_token,
   check_token
 }
-=======
-    fetch_wishlist,
-    fetch_wishlist_duplicates,
-    insert_wishlist,
-    fetch_user_detail,
-    insert_user,
-    check_user_existence,
-    check_email_existence,
-    delete_from_wishlist,
-    get_uid_from_email,
-    connection,
-    current_uid,
-    update_password,
-    update_token,
-    check_token
-}
->>>>>>> upstream/master
