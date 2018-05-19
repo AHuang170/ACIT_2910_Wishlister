@@ -5,8 +5,7 @@ var gog = require("./gog.js")
 const _ = require('lodash');
 
 var steam_object = {};
-var mock_steam_obj =
-{
+var mock_steam_obj = {
     "name": "Into the Breach",
     "price_overview": {
         "initial": 1749,
@@ -16,15 +15,14 @@ var mock_steam_obj =
     "steam_appid": 590380
 };
 
-var mock_gog_obj_1 =
-{
+var mock_gog_obj_1 = {
     customAttributes: [],
     developer: "CD PROJEKT RED",
     publisher: "CD PROJEKT RED",
     price: {
         amount: "12.89",
         baseAmount: "12.89",
-        finalAmount:"12.89",
+        finalAmount: "12.89",
         isDiscounted: false,
         discountPercentage: 0,
         discountDifference: "0.00",
@@ -57,15 +55,14 @@ var mock_gog_obj_1 =
     isWishlistable: true
 };
 
-var mock_gog_obj_2 =
-{
+var mock_gog_obj_2 = {
     customAttributes: [],
     developer: "CD PROJEKT RED",
     publisher: "CD PROJEKT RED",
     price: {
         amount: "12.89",
         baseAmount: "12.00",
-        finalAmount:"6.00",
+        finalAmount: "6.00",
         isDiscounted: true,
         discountPercentage: 50,
         discountDifference: "6.00",
@@ -171,154 +168,159 @@ afterAll(() => {
 
 describe("Steam Tests", () => {
     test("Receive JSON object from Steam API", () => {
-        return steam.steam(590380).then((result) => {
-            steam_object = Object.assign({}, result);
-            expect(steam_object.type).
-            toBe("game")
+            return steam.steam(590380).then((result) => {
+                steam_object = Object.assign({}, result);
+                expect(steam_object.type).
+                toBe("game")
+            })
+        }),
+        test("Process steam object - Game Title", () => {
+            expect(steam.process_object(mock_steam_obj)[0]).
+            toBe("Into the Breach")
+        }),
+        test("Calculte steam app price", () => {
+            expect(steam.calculate_price(10020, 50)).
+            toBe("50.10")
+        }),
+        test("Test object comparison", () => {
+            return steam.get_game_object(570).then((result) => {
+                expect(result.store).
+                toBe("steam")
+            })
+        }),
+        test("Steam object data extraction test", () => {
+            expect(steam.extract_steam_data(mock_steam_obj)).
+            toEqual({
+                name: "Into the Breach",
+                initial: 1749,
+                discount_percent: 0,
+                steam_thumb: "https://steamcdn-a.akamaihd.net/steam/apps/590380/header.jpg?t=1519989363",
+                appid: 590380
+            })
+        }),
+        test("Test object to array conversion", () => {
+            expect(steam.process_object(mock_steam_compare_obj)).
+            toEqual([
+                "The Witcher: Enhanced Edition",
+                "Current Price: $13.00",
+                "Discount 0%",
+                "<img class=\"wishThumb shadow\" src=\"img_url\" />",
+                1111
+            ])
+        }),
+        test("Compare steam and gog prices", () => {
+            expect((steam.compare_prices(mock_steam_compare_obj, mock_gog_compare_obj)).store).
+            toBe("gog")
         })
-    }),
-    test("Process steam object - Game Title", () => {
-        expect(steam.process_object(mock_steam_obj)[0]).
-        toBe("Into the Breach")
-    }),
-    test("Calculte steam app price", () => {
-        expect(steam.calculate_price(10020, 50)).
-        toBe("50.10")
-    }),
-    test("Test object comparison", () => {
-        return steam.get_game_object(570).then((result) => {
-            expect(result.store).
-            toBe("steam")
-        })
-    }),
-    test("Steam object data extraction test", () => {
-        expect(steam.extract_steam_data(mock_steam_obj)).
-        toEqual({
-            name: "Into the Breach",
-            initial: 1749,
-            discount_percent: 0,
-            steam_thumb: "https://steamcdn-a.akamaihd.net/steam/apps/590380/header.jpg?t=1519989363",
-            appid: 590380
-        })
-    }),
-    test("Test object to array conversion", () => {
-        expect(steam.process_object(mock_steam_compare_obj)).
-        toEqual([
-            "The Witcher: Enhanced Edition",
-            "Current Price: $13.00",
-            "Discount 0%",
-            "<img class=\"wishThumb shadow\" src=\"img_url\" />",
-            1111
-        ])
-    }),
-    test("Compare steam and gog prices", () => {
-        expect((steam.compare_prices(mock_steam_compare_obj, mock_gog_compare_obj)).store).
-        toBe("gog")
-    })
 })
 
 describe('SQL DB Tests', () => {
     test("Add user into database", () => {
-        expect(sql.insert_user('TestUser', '$2a$10$QQtyTFzmeCAYhwdMd/nnQeUbGf1TJ7kNHELHRRNMHzlFvLLB55q2O', 'testuser@gmail.com')).
-        toBeTruthy()
-    }),
-    test("Get UID from email", () => {
-        return sql.get_uid_from_email('testuser@gmail.com').then((result) => {
-            expect(result).
-            toBeGreaterThan(0)
-        })
-    }),
-    test("Insert into wishlist", () => {
-        return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
-            sql.insert_wishlist(uid, '376520').then((result) => {
-                expect(result.affectedRows).
-                toBe(1)
+            expect(sql.insert_user('TestUser', '$2a$10$QQtyTFzmeCAYhwdMd/nnQeUbGf1TJ7kNHELHRRNMHzlFvLLB55q2O', 'testuser@gmail.com')).
+            toBeTruthy()
+        }),
+        test("Get UID from email", () => {
+            return sql.get_uid_from_email('testuser@gmail.com').then((result) => {
+                expect(result[0]).
+                toBeGreaterThan(0)
+            })
+        }),
+        test("Insert into wishlist", () => {
+            return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+                sql.insert_wishlist(uid[0], '376520').then((result) => {
+                    expect(result.affectedRows).
+                    toBe(1)
+                })
+            })
+        }),
+        test("Fetch wishlist", () => {
+            return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+                sql.fetch_wishlist(uid[0]).then((result) => {
+                    expect(result[0].appid).
+                    toBe(376520)
+                })
+            })
+        }),
+        test("Delete from wishlist", () => {
+            return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+                sql.delete_from_wishlist(uid[0], '376520').then((result) => {
+                    expect(result.affectedRows).
+                    toBe(1)
+                })
+            })
+        }),
+        test("Fetch user details", () => {
+            return sql.fetch_user_detail('TestUser').then((result) => {
+                expect(result[0].email).
+                toBe('testuser@gmail.com')
+            })
+        }),
+        test("Check if user exists", () => {
+            return sql.check_user_existence('TestUser', 'user').then((result) => {
+                expect(result).
+                toBe(true)
+            })
+        }),
+        test("Check if email exists (false)", () => {
+            return sql.check_email_existence('notanemail', 'email').then((result) => {
+                expect(result).
+                toBe(false)
+            })
+        }),
+        test("Check if email exists (true)", () => {
+            return sql.check_email_existence('testuser@gmail.com', 'email').then((result) => {
+                expect(result).
+                toBe(true)
             })
         })
-    }),
-    test("Fetch wishlist", () => {
-        return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
-            sql.fetch_wishlist(uid).then((result) => {
-                expect(result[0].appid).
-                toBe(376520)
-            })
-        })
-    }),
-    test("Delete from wishlist", () => {
-        return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
-            sql.delete_from_wishlist(uid, '376520').then((result) => {
-                expect(result.affectedRows).
-                toBe(1)
-            })
-        })
-    }),
-    test("Fetch user details", () => {
-        return sql.fetch_user_detail('TestUser').then((result) => {
-            expect(result[0].email).
-            toBe('testuser@gmail.com')
-        })
-    }),
-    test("Check if user exists", () => {
-        return sql.check_user_existence('TestUser', 'user').then((result) => {
-            expect(result).
-            toBe(true)
-        })
-    }),
-    test("Check if email exists (false)", () => {
-        return sql.check_email_existence('notanemail', 'email').then((result) => {
-            expect(result).
-            toBe(false)
-        })
-    }),
-    test("Check if email exists (true)", () => {
-        return sql.check_email_existence('testuser@gmail.com', 'email').then((result) => {
-            expect(result).
-            toBe(true)
-        })
-    })
 
 })
 
 describe('GOG Tests', () => {
     test("Receive JSON object from GOG API", () => {
-        return gog.gog_api("Witcher").then((result) => {
-            expect(_.isArray(result)).
+            return gog.gog_api("Witcher").then((result) => {
+                expect(_.isArray(result)).
+                toBeTruthy()
+            })
+
+        }),
+        test("Return empty list for unmatched name", () => {
+            return gog.gog_api("afdsafdsaf").then((result) => {
+                expect(result).
+                toHaveLength(0)
+            })
+        }),
+        test("Return just the specified game object", () => {
+            expect(gog.isolate_game_obj("The Witcher: Enhanced Edition", mock_gog_game_list).title).
+            toBe("The Witcher: Enhanced Edition")
+
+        }),
+        test("Return undefined for unmatched names", () => {
+            expect(gog.isolate_game_obj("afdsafdsaf", [])).
+            toBe(undefined)
+
+        }),
+        test("Extract data function should return an object", () => {
+            expect(_.isObject(gog.extract_data(mock_gog_obj_1))).
             toBeTruthy()
+        }),
+        test("Extract the right attributes from the object", () => {
+            expect(gog.extract_data(mock_gog_obj_1)).
+            toEqual({
+                initial: 1289,
+                discount_percent: 0,
+                name: "The Witcher: Enhanced Edition",
+            })
         })
-
-    }),
-    test("Return empty list for unmatched name", () => {
-        return gog.gog_api("afdsafdsaf").then((result) => {
-            expect(result).
-            toHaveLength(0)
-        })
-    }),
-    test("Return just the specified game object", () => {
-        expect(gog.isolate_game_obj("The Witcher: Enhanced Edition", mock_gog_game_list).title).
-        toBe("The Witcher: Enhanced Edition")
-
-    }),
-    test("Return undefined for unmatched names", () => {
-        expect(gog.isolate_game_obj("afdsafdsaf", [])).
-        toBe(undefined)
-
-    }),
-    test("Extract data function should return an object", () => {
-        expect(_.isObject(gog.extract_data(mock_gog_obj_1))).
-        toBeTruthy()
-    }),
-    test("Extract the right attributes from the object", () => {
-        expect(gog.extract_data(mock_gog_obj_1)).
-        toEqual({
-            initial: 1289,
-            discount_percent: 0,
-            name: "The Witcher: Enhanced Edition",
-        })
+<<<<<<< HEAD
     })
+=======
+>>>>>>> upstream/master
 })
 
 describe("Server Tests", () => {
     test("Test serverError undefined input", () => {
+<<<<<<< HEAD
         expect(server.serverError(undefined, "Internal Server Error")).
         toBeFalsy()
     }),
@@ -472,4 +474,159 @@ describe("Server Tests", () => {
             ]
         ])
     })
+=======
+            expect(server.serverError(undefined, "Internal Server Error")).
+            toBeFalsy()
+        }),
+        test("Username check for short name", () => {
+            expect(server.check_username_length("short")).
+            toBeTruthy()
+        }),
+        test("Username check for long name", () => {
+            expect(server.check_username_length("looong")).
+            toBeFalsy()
+        }),
+        test("Username space check with spaces", () => {
+            expect(server.check_username_spaces("spa c e")).
+            toBeTruthy()
+        }),
+        test("Username space check without spaces", () => {
+            expect(server.check_username_spaces("space")).
+            toBeFalsy()
+        }),
+        test("Password check for short password", () => {
+            expect(server.check_password_length("*******")).
+            toBeTruthy()
+        }),
+        test("Password check for long password", () => {
+            expect(server.check_password_length("********")).
+            toBeFalsy()
+        }),
+        test("Password space check with spaces", () => {
+            expect(server.check_password_spaces(" *** *** **")).
+            toBeTruthy()
+        }),
+        test("Password space check without spaces", () => {
+            expect(server.check_password_spaces("********")).
+            toBeFalsy()
+        }),
+        test("Password match check with matching inputs", () => {
+            expect(server.check_matching_passwords("thesame", "thesame")).
+            toBeFalsy()
+        }),
+        test("Password space check with non matching inputs", () => {
+            expect(server.check_matching_passwords("different", "notthesame")).
+            toBeTruthy()
+        }),
+        test("Empty input test with 1 empty input 1", () => {
+            expect(server.check_for_empty_fields("", "**********")).
+            toBeTruthy()
+        }),
+        test("Empty input test with 1 empty input 2", () => {
+            expect(server.check_for_empty_fields("**********", "")).
+            toBeTruthy()
+        }),
+        test("Empty input test with 0 empty input", () => {
+            expect(server.check_for_empty_fields("greatname", "**********")).
+            toBeFalsy()
+        }),
+        test("Test final price calculation", () => {
+            expect(server.get_final_price(10000, 73)).
+            toBe("27.00")
+        }),
+        test("Max item count test with small input", () => {
+            expect(server.set_max_items(5)).
+            toBe(5)
+        }),
+        test("Max item count test with large input", () => {
+            expect(server.set_max_items(999999999)).
+            toBe(10)
+        }),
+        test("Email validation test with good input", () => {
+            expect(server.validateEmail("theEYE_<()>_SEESyou@gmail.com")).
+            toBeTruthy()
+        }),
+        test("Email validation test with bad input", () => {
+            expect(server.validateEmail("inital_name_number@gmail.com")).
+            toBeFalsy()
+        }),
+        test("Sort wishlist by name", () => {
+            expect(server.sort_by_name(mock_request_session_wishlist)).
+            toEqual([
+                [
+                    'David.',
+                    'Current Price: $2.19',
+                    'Discount 0%',
+                    'html stuff',
+                    346180
+                ],
+                [
+                    'MachiaVillain',
+                    'Current Price: $17.59',
+                    'Discount 20%',
+                    'html stuff',
+                    555510
+                ],
+                [
+                    'S.T.A.L.K.E.R.: Call of Pripyat',
+                    'Current Price: $6.45',
+                    'Discount 75%',
+                    'html stuff',
+                    41700
+                ]
+            ])
+        }),
+        test("Sort wishlist by price", () => {
+            expect(server.sort_by_price(mock_request_session_wishlist)).
+            toEqual([
+                [
+                    'David.',
+                    'Current Price: $2.19',
+                    'Discount 0%',
+                    'html stuff',
+                    346180
+                ],
+                [
+                    'S.T.A.L.K.E.R.: Call of Pripyat',
+                    'Current Price: $6.45',
+                    'Discount 75%',
+                    'html stuff',
+                    41700
+                ],
+                [
+                    'MachiaVillain',
+                    'Current Price: $17.59',
+                    'Discount 20%',
+                    'html stuff',
+                    555510
+                ]
+            ])
+        }),
+        test("Sort wishlist by sale status", () => {
+            expect(server.sort_by_sale(mock_request_session_wishlist)).
+            toEqual([
+                [
+                    'MachiaVillain',
+                    'Current Price: $17.59',
+                    'Discount 20%',
+                    'html stuff',
+                    555510
+                ],
+                [
+                    'S.T.A.L.K.E.R.: Call of Pripyat',
+                    'Current Price: $6.45',
+                    'Discount 75%',
+                    'html stuff',
+                    41700
+                ],
+                [
+                    'David.',
+                    'Current Price: $2.19',
+                    'Discount 0%',
+                    'html stuff',
+                    346180
+                ]
+            ])
+        })
+>>>>>>> upstream/master
 })
