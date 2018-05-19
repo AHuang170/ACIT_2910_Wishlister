@@ -1,5 +1,5 @@
 .gitignore
-config.js
+
 game_filter.js
 /node_modules/
 /coverage/
