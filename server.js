@@ -61,12 +61,17 @@ hbs.registerHelper('message', (text) => {
 hbs.registerHelper('apps', (list) => {
     var titleList = list.gameList;
     var out = '';
+    var bg_style_class = '';
     for (var item in titleList) {
         if (titleList[item][2] === 'Discount 0%') {
-            out = `${out}<div class='game shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='Steam_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
+            bg_style_class = 'game shadow';
+            // out = `${out}<div class='game shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
         } else {
-            out = `${out}<div class='game_sale shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='Steam_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
+            bg_style_class = 'game_sale shadow';
+            // out = `${out}<div class='game_sale shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
         }
+        // out = `${out}<div class='${bg_style_class}' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
+        out = `${out}<div class='${bg_style_class}' id='${titleList[item][4]}' >${titleList[item][3]}<br>${titleList[item][0]}<br>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}_logo.png'></img><br>${titleList[item][2]}<div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
     }
     return out;
 });
@@ -194,29 +199,28 @@ app.get('/fetchDetails', (request, response) => {
 
     if (index != -1) {
         var appid = gameobj['applist'].apps[index].appid.toString();
-        request.session.appid = appid;
 
-        steam_function.steam(appid).then((result) => {
+        steam_function.get_game_object(appid).then((result) => {
+                var initial_price = parseInt(result.initial);
+                var disct_percentage = parseInt(result.discount_percent);
+                var final_price = server_function.get_final_price(initial_price, disct_percentage);
+                var current_price = `$${final_price}`;
+                var store_logo = `${result.store}_logo.png`;
 
-            var initial_price = parseInt(result.price_overview.initial);
-            var disct_percentage = parseInt(result.price_overview.discount_percent);
-            var final_price = server_function.get_final_price(initial_price, disct_percentage);
-
-            var current_price = `$${final_price}`;
-
-            response.render('index.hbs', {
-                gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
-                year: new Date().getFullYear(),
-                failedAuth: false,
-                loggedIn: request.session.loggedIn,
-                userName: request.session.userName,
-                gamename: `${result.name}`,
-                price: `Current Price: ${current_price}`,
-                discount: `Discount ${disct_percentage}%`,
-                displayDetails: true,
-                gameThumb: `<img id=\"gameThumb\" class=\"shadow\" src=\"${result.header_image}\" />`,
-                details: 'Game Details'
-            });
+                response.render('index.hbs', {
+                        gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
+                        year: new Date().getFullYear(),
+                        failedAuth: false,
+                        loggedIn: request.session.loggedIn,
+                        userName: request.session.userName,
+                        gamename: `${result.name}`,
+                        price: `Current Price: ${current_price}`,
+                        discount: `Discount ${disct_percentage}%`,
+                        displayDetails: true,
+                        gameThumb: `<img id=\"gameThumb\" class=\"shadow\" src=\"${result.steam_thumb}\" />`,
+                        details: 'Game Details',
+                        store: `<img class='wishlistlogo' src='${store_logo}'></img>`
+                    });
         }).catch((error) => {
             console.log(error);
         });
@@ -335,7 +339,7 @@ app.get('/logout', (request, response) => {
 // Deletes items from user's wishlist
 app.get('/removeFromWishlist', (request, response) => {
     var appid = request.query.a;
-    console.log(`APPID is:${appid}`);
+    // console.log(`APPID is:${appid}`);
     var uid = request.session.uid;
 
     sql_db_function.delete_from_wishlist(uid, appid).then((result) => {
