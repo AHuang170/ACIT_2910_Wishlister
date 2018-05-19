@@ -8,8 +8,12 @@
     {{#if emptyField}}
       <label id="failedText">Enter both username and password</label>
     {{else}}
+    {{#if responseCode}}
+        <label id="failedText">Failed captcha verification</label>
+    {{else}}
       {{#if failedAuth}}
         <label id="failedText">Invalid username or password</label>
+        {{/if}}
       {{/if}}
     {{/if}}
 
