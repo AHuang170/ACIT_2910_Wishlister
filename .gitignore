@@ -1,8 +1,8 @@
 .gitignore
 config.js
 game_filter.js
-node_modules
-coverage
+/node_modules/
+/coverage/
 coverage/clover.xml
 coverage/coverage-final.json
 coverage/lcov-report/index.html
