@@ -65,28 +65,6 @@ var game_loop = (queryResult) => {
             } catch (error) {
                 reject(error);
             }
-            // try {
-            //     var steam_result = await steam(item.appid);
-            // } catch (error) {
-            //     reject(error);
-            // }
-            //
-            // var steam_object = Object.assign({}, extract_steam_data(steam_result));
-            // var steam_name = steam_object.name
-            // console.log('steam 1',steam_name)
-            // var gog_object = await gog.gog_api([steam_name]);
-            // console.log('steam 2',steam_name)
-            // result = gog.isolate_game_obj(steam_name, gog_object)
-            // if (result == undefined){
-            //     return undefined
-            // } else {
-            //     return gog.extract_data(result)
-            // }
-            //
-            //
-            // var result_obj = compare_prices(steam_object, gog_object);
-            //
-            // // TODO: implement price comparison here
             returnList.push(process_object(result_obj))
         }
         resolve(returnList);
@@ -137,7 +115,8 @@ function process_object(input_object) {
     var steam_discount = `Discount ${disct_percentage}%`;
     var steam_thumb = `<img class=\"wishThumb shadow\" src=\"${input_object.steam_thumb}\" />`;
     var appid = input_object.appid;
-    return ([steam_name, steam_price, steam_discount, steam_thumb, appid]);
+    var best_deal = input_object.store;
+    return ([steam_name, steam_price, steam_discount, steam_thumb, appid, best_deal]);
 }
 
 /**

@@ -205,7 +205,8 @@ describe("Steam Tests", () => {
                 "Current Price: $13.00",
                 "Discount 0%",
                 "<img class=\"wishThumb shadow\" src=\"img_url\" />",
-                1111
+                1111,
+                undefined
             ])
         }),
         test("Compare steam and gog prices", () => {

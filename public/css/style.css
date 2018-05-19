@@ -444,11 +444,13 @@ header {
 	margin-top:45px;
 }
 .search {
+	z-index: 1;
 	grid-column: 1 / 3;
 	grid-row: 1;
 }
 
 .details {
+	z-index: 2;
 	margin-top:170px;
 	grid-column: 1 / 3;
 	grid-row: 1 / 4;
