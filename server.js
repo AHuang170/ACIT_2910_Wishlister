@@ -230,7 +230,7 @@ app.get('/fetchDetails', (request, response) => {
 // Authorize users through the login panel on the home page. Passwords are
 // hashed and stored in the MySQL database
   app.post('/loginAuth', (request, response) => {
-    var input_name = request.body.username
+      var input_name = request.body.username
     var input_pass = request.body.password
     var resultName = 'numMatch'
     var robot = false; //checking by recapcha
