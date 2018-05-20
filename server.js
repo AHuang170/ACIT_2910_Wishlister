@@ -4,7 +4,7 @@
  */
 
  /**
-  * Request module installed with npm
+  * Moduels used with application
   */
 const express = require('express');
 const hbs = require('hbs');
@@ -28,7 +28,7 @@ const nodemailer = require('nodemailer');
 const saltRounds = 10;
 
 /**
- * import modules
+ * import local modules
  */
 const server_function = require('./server_function.js')
 
@@ -141,8 +141,12 @@ app.get('/', (request, response) => {
  * @route {POST} /
  */
 app.post('/', (request, response) => {
-    request.session.sort = 'sale'
-    if (request.body.game == '') {
+  if(request.body.sort_value == undefined) {
+    request.session.sort = 'name'
+  }else {
+    request.session.sort = request.body.sort_value
+  }
+    if (request.body.game == '' | request.body.game == undefined) {
         response.render('index.hbs', {
             gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
             year: new Date().getFullYear(),
@@ -215,11 +219,14 @@ app.post('/', (request, response) => {
  * @route {GET} /fetchDetails
  */
 app.get('/fetchDetails', (request, response) => {
-    request.session.sort = 'sale'
+    if(request.body.sort_value == undefined) {
+      request.session.sort = 'name'
+    }else {
+      request.session.sort = request.body.sort_value
+    }
     var index = _.findIndex(gameobj['applist'].apps, function(o) {
         return o.name == request.query.n;
     });
-
     if (index != -1) {
         var appid = gameobj['applist'].apps[index].appid.toString();
         request.session.appid = appid;
@@ -266,7 +273,11 @@ app.post('/loginAuth', (request, response) => {
     // var query = `SELECT * FROM users WHERE username = '${input_name}'`;
 
 
-    request.session.sort = 'sale'
+    if(request.body.sort_value == undefined) {
+      request.session.sort = 'name'
+    }else {
+      request.session.sort = request.body.sort_value
+    }
 
     var empty_field = server_function.check_for_empty_fields(input_name, input_pass);
 
