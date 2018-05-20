@@ -273,7 +273,7 @@ app.get('/fetchDetails', (request, response) => {
    return;
  }
 
-    
+
 
     sql_db_function.fetch_user_detail(input_name).then((result) => {
       if (result.length != 1) {
@@ -679,7 +679,7 @@ app.use((request, response) => {
     response.render('404.hbs');
 });
 
-// Listen on port 80
+// Listen on port 8080
 app.listen(8080, () => {
     console.log(`Server is up on the port ${serverPort}`);
 });
