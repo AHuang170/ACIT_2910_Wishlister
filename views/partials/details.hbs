@@ -4,9 +4,11 @@
 
 
   {{#if badAdd}}
+  <br> <br>
     <div class='formMessage'>Item already exists in wishlist..</div>
   {{/if}}
   {{#if emailSent}}
+  <br> <br>
     <div class='formMessage'>Password Recovery Email Sent!</div>
   {{/if}}
   {{#if notFound}}
@@ -15,7 +17,7 @@
   {{> list}}
   <p>{{{gameThumb}}}</p>
   <p>{{gamename}}</p>
-  <p>{{price}}</p>
+  <p>{{price}}{{{store}}}</p>
   <p>{{discount}}</p>
   <p>{{score}}</p>
 

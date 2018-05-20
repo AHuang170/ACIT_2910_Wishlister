@@ -3,6 +3,7 @@
 body {
 	font-family: 'Lato', sans-serif;
 	background-color:rgb(250,250,250);
+    margin: 0px;
 }
 
 a {
@@ -15,6 +16,7 @@ a {
 p, label {
 	color:black;
 	font-size:1.2em;
+    margin-top: 0px;
 }
 
 h1 {
@@ -29,6 +31,31 @@ h2 {
 .shadow {
 	/* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); */
 	border:1px solid rgba(0,0,0,0.04);
+}
+
+.btn{
+    background-color: lightgray;
+    border: none;
+    border-radius: 12px;
+    padding: 7px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1.2em;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.btn-outline-secondary:hover{
+    background-color: gray;
+}
+
+.form-control{
+    border-style: solid;
+    border-radius: 12px;
+    border: 1px solid lightgray;
+    padding: 6px 9px;
+    text-decoration: none;
+    font-size: 1.2em;
 }
 
 /* --------------------------------- Header --------------------------------- */
@@ -54,10 +81,9 @@ header {
 #steam {
 	width:60px;
 	margin-left:25px;
-	padding-top:5px;
+	padding-top:10px;
 	margin-bottom:5px;
 	position: relative;
-	top: -15px;
 }
 
 .home{
@@ -72,6 +98,7 @@ header {
 	font-weight:bold;
 	z-index:2;
 	padding:5px;
+    top:-15px;
 }
 
 #loginForm {
@@ -100,13 +127,13 @@ header {
 #create {
 	position:relative;
 	margin-right:3px;
-	bottom:11px;
+	bottom:1px;
 }
 
 #enter-pass {
 	position:relative;
 	display:inline-block;
-	width:90%;
+	width:97%;
 	margin-top:15px;
 }
 
@@ -127,7 +154,7 @@ header {
 	position:absolute;
 	text-align:right;
 	right:0px;
-	width:300px;
+	width:400px;
 }
 
 #lgout {
@@ -188,9 +215,9 @@ header {
 
 #msgBox{
 	position: absolute;
-	width: 300px;
-	height: 200px;
-	background-color: white;
+	width: 303px;
+	height: 300px;
+	background-color: #f9f9f9;
 	left: 0;
 	right: 0;
 	top: 0;
@@ -199,6 +226,15 @@ header {
 	border-radius: 5px;
 	text-align: center;
 	padding: 10px
+}
+/* --------------------------------- Account Creation------------------------ */
+
+#recaptcha{
+	left:-11px;
+	top: 10px;
+	position: relative;
+
+
 }
 
 /* --------------------------------- Account Creation------------------------ */
@@ -229,25 +265,30 @@ header {
 
 /* --------------------------------- Search --------------------------------- */
 #search {
-	padding:15px;
-	/* background-color:rgb(255,255,255); */
+    z-index: 1;
+    margin-left: 15px;
+	position: relative;
+    /*padding:15px;
+    background-color:rgb(255,255,255); */
 }
 
 #search-btn {
 	margin-top:-4px;
 	margin-left:10px;
-	width:25%;
+	width:29%;
 }
 
 #search-box {
-	width:70%;
+	width:65%;
 	display:inline-block;
+    margin-bottom: 10px;
 }
 
 /* --------------------------------- Details -------------------------------- */
 #details {
-	padding:15px;
-	/* background-color:rgb(255,255,255); */
+    margin-left: 15px;
+    /*padding:15px;
+    background-color:rgb(255,255,255); */
 }
 
 #gameThumb	{
@@ -349,20 +390,32 @@ header {
     width: 85%;
     text-align: center;
 }
-#yes-btn{
+#leftHanger{
     position: absolute;
-    width: 100px;
-    top: 50px;
-    left: 35%;
+    left: 0px;
+    width: 50%;
+}
+#yes{
+    font-size: 1.2em;
+    position: absolute;
+    top: 20px;
+    right: 10px;
+    margin: auto;
 }
 #yes-btn:hover{
     background-color: lightcoral;
 }
-#no-btn{
+#rightHanger{
     position: absolute;
-    width: 100px;
-    top: 50px;
-    right: 35%;
+    right: 0px;
+    width: 50%;
+}
+#no{
+    font-size: 1.2em;
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    margin: auto;
 }
 
 /* ---------------------------------- Grid ---------------------------------- */
@@ -370,8 +423,7 @@ header {
 	position:absolute;
 	width:100%;
 	height:90%;
-	margin-top:10px;
-	padding:20px;
+    left: 0px;
 	background-color:rgb(250,250,250);
 	display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -379,13 +431,27 @@ header {
   grid-auto-rows: minmax(176px, auto);
 }
 
+#bullyhunter{
+    display: none;
+    position: fixed;
+    object-fit: cover;
+    height: 100vh;
+    width: 100vw;
+    top: 0px;
+}
+
+#searchType {
+	margin-top:45px;
+}
 .search {
+	z-index: 1;
 	grid-column: 1 / 3;
 	grid-row: 1;
 }
 
 .details {
-	margin-top:120px;
+	z-index: 2;
+	margin-top:170px;
 	grid-column: 1 / 3;
 	grid-row: 1 / 4;
 }

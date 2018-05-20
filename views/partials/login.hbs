@@ -3,15 +3,18 @@
   <div id='msgBox' class="shadow">
     <form action="/loginAuth" method="post">
       <div class='deleteButton' id='logIn-close'>x</div>
-  <label for="username">Username: </label>
-</br>
-  <input id="username" class="form-control" type="text" name="username" >
-</br>
-  <label for="password">Password: </label>
-</br>
-  <input id="password" class="form-control" type="password" name="password">
-  <input id="enter-pass" class="btn btn-outline-secondary" type="submit" value="Login">
-  </form>
+      <label for="username">Username: </label>
+        </br>
+      <input id="username" class="form-control" type="text" name="username" >
+        </br>
+      <label for="password">Password: </label>
+        </br>
+      <input id="password" class="form-control" type="password" name="password">
+      <div id='recaptcha'>
+        <div class="g-recaptcha" data-sitekey="6LevdlkUAAAAAKUaUHPAFdL2_S2vhohGe7C5fRnd"></div>
+      </div>
+      <input id="enter-pass" class="btn btn-outline-secondary" type="submit" value="Login">
+    </form>
   </div>
 </div>
 
