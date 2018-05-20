@@ -74,7 +74,7 @@ var game_loop = (queryResult) => {
 /**
  * Fetches game detail Object
  * @alias module:./steam.get_game_object
- * @param {number} app_id - Steam application ID\
+ * @param {number} app_id - Steam application ID
  * @returns {Promise} Promise to the server that the function will provide an object containing game information
  */
 var get_game_object = (app_id) => {
