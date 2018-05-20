@@ -138,7 +138,6 @@ app.post('/', (request, response) => {
         if (index != -1) {
             var appid = gameobj['applist'].apps[index].appid.toString();
             request.session.appid = appid;
-
             steam_function.steam(appid).then((result) => {
                 var initial_price = parseInt(result.price_overview.initial);
                 var disct_percentage = parseInt(result.price_overview.discount_percent);
@@ -200,7 +199,7 @@ app.get('/fetchDetails', (request, response) => {
 
     if (index != -1) {
         var appid = gameobj['applist'].apps[index].appid.toString();
-
+        request.session.appid = appid;
         steam_function.get_game_object(appid).then((result) => {
                 var initial_price = parseInt(result.initial);
                 var disct_percentage = parseInt(result.discount_percent);
