@@ -1,6 +1,6 @@
 /**
  * Server functions
- * @module ./server_function.js
+ * @module ./server_function
  */
 
  /**

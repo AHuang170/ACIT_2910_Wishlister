@@ -36,6 +36,7 @@
     "subsequence-search": "^1.0.1"
   },
   "devDependencies": {
-    "jest": "^22.4.3"
+    "jest": "^22.4.3",
+    "jsdoc-route-plugin": "^0.1.0"
   }
 }

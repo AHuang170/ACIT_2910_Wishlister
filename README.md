@@ -14,3 +14,6 @@
   <li>Subsearch</li>
   <li>BCrypt</li>
 </ul>
+
+<h1>To Generate Documentations</h1>
+<u1>Type: ./node_modules/.bin/jsdoc --configure jsdoc.conf</u1>

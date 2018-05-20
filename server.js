@@ -1,3 +1,11 @@
+/**
+ * Server functions
+ * @module ./server
+ */
+
+ /**
+  * Request module installed with npm
+  */
 const express = require('express');
 const hbs = require('hbs');
 const fs = require('fs');
@@ -7,11 +15,11 @@ const cookieSession = require('cookie-session');
 const subsearch = require('subsequence-search');
 const bcrypt = require('bcrypt');
 const serverPort = 8080;
-var math = require('mathjs');
-var request_module = require('request');
-var path = require('path');
-var hbsMailer = require('nodemailer-express-handlebars')
-var nodemailer = require('nodemailer');
+const math = require('mathjs');
+const request_module = require('request');
+const path = require('path');
+const hbsMailer = require('nodemailer-express-handlebars')
+const nodemailer = require('nodemailer');
 
 
 /**
@@ -19,6 +27,9 @@ var nodemailer = require('nodemailer');
  */
 const saltRounds = 10;
 
+/**
+ * import modules
+ */
 const server_function = require('./server_function.js')
 
 //Contains all functions that uses the steam api, namely steam and game_loop
@@ -87,7 +98,11 @@ hbs.registerHelper('searchResults', (list) => {
 })
 
 // ----------------------------------- Routes ----------------------------------
-// Main page before login
+/**
+ * Main page before login
+ * @name Main Page
+ * @route {GET} /
+ */
 app.get('/', (request, response) => {
 
     var target_id = -1;
@@ -120,7 +135,11 @@ app.get('/', (request, response) => {
 
 });
 
-// Search for game using static JSON gamelist, and Steam API
+/**
+ * Search for game using static JSON gamelist, and Steam API
+ * @name Game Search
+ * @route {POST} /
+ */
 app.post('/', (request, response) => {
     request.session.sort = 'sale'
     if (request.body.game == '') {
@@ -190,7 +209,11 @@ app.post('/', (request, response) => {
     }
 });
 
-// Using the appid of a found game, query the steam API and display result
+/**
+ * Using the appid of a found game, query the steam API and display result
+ * @name Query Details
+ * @route {GET} /fetchDetails
+ */
 app.get('/fetchDetails', (request, response) => {
     request.session.sort = 'sale'
     var index = _.findIndex(gameobj['applist'].apps, function(o) {
@@ -227,11 +250,14 @@ app.get('/fetchDetails', (request, response) => {
     }
 });
 
-// Authorize users through the login panel on the home page. Passwords are
-// hashed and stored in the MySQL database
-
-  app.post('/loginAuth', (request, response) => {
-      var input_name = request.body.username
+/**
+ * Authorize users through the login panel on the home page. Passwords are
+ * hashed and stored in teh MySQL database
+ * @name User Authentication
+ * @route {POST} /loginAuth
+ */
+app.post('/loginAuth', (request, response) => {
+    var input_name = request.body.username
     var input_pass = request.body.password
     var resultName = 'numMatch'
     var robot = false; //checking by recapcha
@@ -335,7 +361,11 @@ app.get('/fetchDetails', (request, response) => {
 
 });
 
-// Delete sessions data and re-render the home page
+/**
+ * Delete sessions data and re-render the home page
+ * @name User logout
+ * @route {GET} /logout
+ */
 app.get('/logout', (request, response) => {
     request.session = null;
     response.render('index.hbs', {
@@ -344,7 +374,11 @@ app.get('/logout', (request, response) => {
     });
 });
 
-// Deletes items from user's wishlist
+/**
+ * Deletes items from user's wishlist
+ * @name Remove Item From Wishlist
+ * @route {GET} /removeFromWishlist
+ */
 app.get('/removeFromWishlist', (request, response) => {
     var appid = request.query.a;
     // console.log(`APPID is:${appid}`);
@@ -370,7 +404,11 @@ app.get('/removeFromWishlist', (request, response) => {
     });
 });
 
-// Load a new page where the user can create an account
+/**
+ * Load a new page where the user can create an account
+ * @name Create Account
+ * @route {GET} /accCreate
+ */
 app.get('/accCreate', (request, response) => {
     response.render('acc_create.hbs', {
         creatingUser: true,
@@ -378,21 +416,32 @@ app.get('/accCreate', (request, response) => {
     });
 });
 
-// Load a new page where the user can recover their password via an email
+/**
+ * Load a new page where the user can recover their password via an email
+ * @name Password Recovery
+ * @route {GET} /RecoverPassword
+ */
 app.get('/RecoverPassword', (request, response) => {
     response.render('passwordRecovery.hbs', {
 
     });
 });
 
-// Load a new page from the emailed link where a user can enter their new password
+/**
+ * Load a new page from the emailed link where a user can enter their new password
+ * @name Enter New Password
+ * @route {GET} /passwordRecoveryEntry
+ */
 app.get('/passwordRecoveryEntry', (request, response) => {
     response.render('passwordRecoveryEntry.hbs', {});
 });
 
-
-// Accepts the user's email, name, and password. Performs server side checks for
-// password quality
+/**
+ * Accepts the user's email, name, and password. Performs server side checks for
+ * password quality
+ * @name Enter New Password
+ * @route {POST} /createUser
+ */
 app.post('/createUser', (request, response) => {
     var input_user_email = request.body.acc_email;
     var input_user_name = request.body.acc_name;
@@ -450,7 +499,11 @@ app.post('/createUser', (request, response) => {
     });
 })
 
-// Add game to wishlist and store result in MySQL database for current user
+/**
+ * Add game to wishlist and store result in MySQL database for current user
+ * @name Add Item to Wishlist
+ * @route {POST} /addToWishlist
+ */
 app.post('/addToWishlist', (request, response) => {
 
     // Step 1 - Check if a user is logged in. If not, ask them to log in
@@ -497,7 +550,11 @@ app.post('/addToWishlist', (request, response) => {
     }
 });
 
-// test if the users email is in the database and send them an email if it is
+/**
+ * Test if the users email is in the database and send them an email if it is
+ * @name Send Password Recovery Email
+ * @route {POST} /passwordRecovery
+ */
 app.post('/passwordRecovery', (request, response) => {
 
     var recovery_email = request.body.rec_email;
@@ -589,7 +646,12 @@ app.post('/passwordRecovery', (request, response) => {
     })
 });
 
-// function to change the users password after checking the token provided and token expiry is valid
+/**
+ * Function to change the users password after checking the token provided and
+ * token expiry is valid
+ * @name Update User Password
+ * @route {POST} /passwordRecoveryChange
+ */
 app.post('/passwordRecoveryChange', (request, response) => {
     var new_pass = request.body.rec_pass;
     var uid = 1;
@@ -672,13 +734,19 @@ app.post('/passwordRecoveryChange', (request, response) => {
     });
 });
 
-// Handle all other paths and render 404 error page
+/**
+ * Handle all other paths and render 404 error page
+ * @name Render 404 Page
+ * @route {USE} *
+ */
 app.use((request, response) => {
     response.status(404);
     response.render('404.hbs');
 });
 
-// Listen on port 8080
+/**
+ * Listen on port 8080
+ */
 app.listen(8080, () => {
     console.log(`Server is up on the port ${serverPort}`);
 });
