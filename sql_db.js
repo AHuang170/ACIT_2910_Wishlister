@@ -19,7 +19,7 @@ var mysql = config.mysql
  * @class
  */
 var connection = config.connection;
-var current_uid = 0;
+// var current_uid = 0;
 
 /**
  * Connect to the database
@@ -495,7 +495,7 @@ module.exports = {
     delete_from_wishlist,
     get_uid_from_email,
     connection,
-    current_uid,
+    // current_uid,
     update_password,
     update_token,
     check_token

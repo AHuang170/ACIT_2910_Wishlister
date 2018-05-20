@@ -273,7 +273,42 @@ describe('SQL DB Tests', () => {
                 expect(result).
                 toBe(true)
             })
+        }),
+        test("Checks for existing identical entry in wishlist table", () => {
+            var saved_uid = undefined;
+            var saved_appid = undefined;
+
+            return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+                saved_uid = uid[0];
+                saved_appid = '376521';
+                return sql.insert_wishlist(saved_uid, saved_appid)
+            }).then((result) => {
+                sql.fetch_wishlist_duplicates(saved_uid, saved_appid).then((result) => {
+                    expect(result.length > 0).
+                    toBeTruthy();
+                })
+            })
+        }),
+        test("Checks for existing identical entry in wishlist table (no entry)", () => {
+            var saved_uid = undefined;
+
+            return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+                saved_uid = uid[0];
+
+                sql.fetch_wishlist_duplicates(saved_uid, "-1").then((result) => {
+                    expect(result.length == 0).
+                    toBeTruthy();
+                })
+            })
         })
+
+        /*
+         *Add tests for:
+         * fetch_wishlist_duplicates
+         * update_password
+         * update_token
+         * check_token
+         */
 
 })
 
