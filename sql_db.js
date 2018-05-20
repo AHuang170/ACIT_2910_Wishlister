@@ -305,12 +305,9 @@ var check_email_existence = (input_user_email, emailName) => {
             if (err) {
                 reject(err);
             }
-
             if (result[0][emailName] >= 1) {
                 queryResult = true;
-
             }
-
             resolve(queryResult);
         });
     })
@@ -383,7 +380,6 @@ var update_password = (uid, new_password_hash) => {
             if (err) {
                 reject(err);
             } else {
-
                 connection.query(query, function(err, result, fields) {
                     if (err) {
                         reject(err);
@@ -392,7 +388,6 @@ var update_password = (uid, new_password_hash) => {
                     }
                 });
             }
-
         });
     })
 }
@@ -428,7 +423,6 @@ var update_token = (uid, token) => {
             } else {
                 resolve(uid);
             }
-
         });
     })
 }
@@ -464,15 +458,7 @@ var check_token = (uid, token, currentTime, tokenTime) => {
             if (err) {
                 reject(err);
             } else {
-
-                // console.log(result);
-                // console.log(result[0]);
                 if (result.length > 0) {
-
-                    // console.log(result);
-                    // console.log(result[0][tokenTime]);
-                    // console.log(result[0][currentTime]);
-
                     if (result[0][tokenTime] > result[0][currentTime]) {
                         resolve(true);
                     }
