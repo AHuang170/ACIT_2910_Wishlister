@@ -111,6 +111,25 @@ var mock_gog_compare_obj = {
 
 var mock_gog_game_list = [mock_gog_obj_1, mock_gog_obj_2];
 
+var mock_wishlist = [
+    {
+        uid: 23,
+        appid: 570
+    },
+    {
+        uid: 23,
+        appid: 41700
+    },
+    {
+        uid: 23,
+        appid: 346180
+    },
+    {
+        uid: 23,
+        appid: 555510
+    }
+]
+
 var mock_request_session_wishlist = [
     [
         'S.T.A.L.K.E.R.: Call of Pripyat',
@@ -212,6 +231,18 @@ describe("Steam Tests", () => {
         test("Compare steam and gog prices", () => {
             expect((steam.compare_prices(mock_steam_compare_obj, mock_gog_compare_obj)).store).
             toBe("gog")
+        }),
+        test("Test for wishlist detail fetching", () => {
+            return steam.game_loop(mock_wishlist).then((result) => {
+                result_name_list = [result[0][0],result[1][0], result[2][0],result[3][0]]
+                expect(result_name_list).
+                toEqual([
+                    "Dota 2",
+                    "S.T.A.L.K.E.R.: Call of Pripyat",
+                    "David.",
+                    "MachiaVillain"
+                ])
+            })
         })
 })
 
