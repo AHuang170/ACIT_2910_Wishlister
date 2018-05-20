@@ -300,16 +300,33 @@ describe('SQL DB Tests', () => {
                     toBeTruthy();
                 })
             })
+        }),
+        test("Update password test", () => {
+            return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+                saved_uid = uid[0];
+
+                sql.update_password(uid[0], "s4a89f4ds8a4f8dsaf4ds").then((result) => {
+                    expect(result[0].password).
+                    toBe("s4a89f4ds8a4f8dsaf4ds")
+                })
+            })
+        }),
+        test("Update token test", () => {
+            return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+                sql.update_token(uid[0], 'new_token_hash').then((result) => {
+                    expect(result).
+                    toBe(uid[0])
+                })
+            })
+        }),
+        test("Check token test", () => {
+            return sql.get_uid_from_email('testuser@gmail.com').then((uid) => {
+                sql.check_token(uid[0], "new_token_hash", 'current', 'past').then((result) => {
+                    expect(result).
+                    toBeTruthy();
+                })
+            })
         })
-
-        /*
-         *Add tests for:
-         * fetch_wishlist_duplicates
-         * update_password
-         * update_token
-         * check_token
-         */
-
 })
 
 describe('GOG Tests', () => {
@@ -481,6 +498,84 @@ describe("Server Tests", () => {
         }),
         test("Sort wishlist by sale status", () => {
             expect(server.sort_by_sale(mock_request_session_wishlist)).
+            toEqual([
+                [
+                    'MachiaVillain',
+                    'Current Price: $17.59',
+                    'Discount 20%',
+                    'html stuff',
+                    555510
+                ],
+                [
+                    'S.T.A.L.K.E.R.: Call of Pripyat',
+                    'Current Price: $6.45',
+                    'Discount 75%',
+                    'html stuff',
+                    41700
+                ],
+                [
+                    'David.',
+                    'Current Price: $2.19',
+                    'Discount 0%',
+                    'html stuff',
+                    346180
+                ]
+            ])
+        }),
+        test("Main sort function for type: name", () => {
+            expect(server.sort_wishlist('name', mock_request_session_wishlist)).
+            toEqual([
+                [
+                    'David.',
+                    'Current Price: $2.19',
+                    'Discount 0%',
+                    'html stuff',
+                    346180
+                ],
+                [
+                    'MachiaVillain',
+                    'Current Price: $17.59',
+                    'Discount 20%',
+                    'html stuff',
+                    555510
+                ],
+                [
+                    'S.T.A.L.K.E.R.: Call of Pripyat',
+                    'Current Price: $6.45',
+                    'Discount 75%',
+                    'html stuff',
+                    41700
+                ]
+            ])
+        }),
+        test("Main sort function for type: price", () => {
+            expect(server.sort_wishlist('price', mock_request_session_wishlist)).
+            toEqual([
+                [
+                    'David.',
+                    'Current Price: $2.19',
+                    'Discount 0%',
+                    'html stuff',
+                    346180
+                ],
+                [
+                    'S.T.A.L.K.E.R.: Call of Pripyat',
+                    'Current Price: $6.45',
+                    'Discount 75%',
+                    'html stuff',
+                    41700
+                ],
+                [
+                    'MachiaVillain',
+                    'Current Price: $17.59',
+                    'Discount 20%',
+                    'html stuff',
+                    555510
+                ]
+            ])
+        }),
+        test("Main sort function for type: sale", () => {
+            expect(server.sort_wishlist('sale', mock_request_session_wishlist)).
             toEqual([
                 [
                     'MachiaVillain',
