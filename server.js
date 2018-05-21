@@ -141,14 +141,18 @@ app.get('/', (request, response) => {
  * @route {POST} /
  */
 app.post('/', (request, response) => {
+    var target_game_name = request.body.game;
     if(request.body.sort_value==undefined){
         if(request.session.sort==undefined){
             request.session.sort = "name"
         }
     }else {
-        request.session.sort = request.body.sort_value
+        request.session.sort = request.body.sort_value;
+        target_game_name = request.session.fetchedGame;
+
     }
-    if (request.body.game == '' | request.body.game == undefined) {
+    if (target_game_name == '' | target_game_name == undefined) {
+        request.session.fetchedGame = undefined;
         response.render('index.hbs', {
             gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
             year: new Date().getFullYear(),
@@ -157,7 +161,7 @@ app.post('/', (request, response) => {
         })
     } else {
         var index = _.findIndex(gameobj['applist'].apps, function(o) {
-            return o.name == request.body.game;
+            return o.name == target_game_name;
         });
 
         if (index != -1) {
@@ -167,6 +171,7 @@ app.post('/', (request, response) => {
                 var initial_price = parseInt(result.price_overview.initial);
                 var disct_percentage = parseInt(result.price_overview.discount_percent);
                 var current_price = `$${server_function.get_final_price(initial_price, disct_percentage)}`;
+                request.session.fetchedGame = result.name;
                 response.render('index.hbs', {
                     gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
                     year: new Date().getFullYear(),
@@ -240,7 +245,7 @@ app.get('/fetchDetails', (request, response) => {
                 var final_price = server_function.get_final_price(initial_price, disct_percentage);
                 var current_price = `$${final_price}`;
                 var store_logo = `${result.store}_logo.png`;
-
+                request.session.fetchedGame = result.name;
                 response.render('index.hbs', {
                         gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
                         year: new Date().getFullYear(),
