@@ -276,6 +276,7 @@ header {
 	margin-top:-4px;
 	margin-left:10px;
 	width:29%;
+	position: absolute;
 }
 
 #search-box {
@@ -460,6 +461,7 @@ header {
 	grid-column: 3 / 5;
 	grid-row: 1 / 5;
 	padding:15px;
+	z-index: 15;
 }
 
 @media only screen and (max-width: 800px) {
