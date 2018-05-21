@@ -141,11 +141,13 @@ app.get('/', (request, response) => {
  * @route {POST} /
  */
 app.post('/', (request, response) => {
-  if(request.body.sort_value == undefined) {
-    request.session.sort = 'name'
-  }else {
-    request.session.sort = request.body.sort_value
-  }
+    if(request.body.sort_value==undefined){
+        if(request.session.sort==undefined){
+            request.session.sort = "name"
+        }
+    }else {
+        request.session.sort = request.body.sort_value
+    }
     if (request.body.game == '' | request.body.game == undefined) {
         response.render('index.hbs', {
             gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
@@ -219,10 +221,12 @@ app.post('/', (request, response) => {
  * @route {GET} /fetchDetails
  */
 app.get('/fetchDetails', (request, response) => {
-    if(request.body.sort_value == undefined) {
-      request.session.sort = 'name'
+    if(request.body.sort_value==undefined){
+        if(request.session.sort==undefined){
+            request.session.sort = "name"
+        }
     }else {
-      request.session.sort = request.body.sort_value
+        request.session.sort = request.body.sort_value
     }
     var index = _.findIndex(gameobj['applist'].apps, function(o) {
         return o.name == request.query.n;
@@ -273,10 +277,12 @@ app.post('/loginAuth', (request, response) => {
     // var query = `SELECT * FROM users WHERE username = '${input_name}'`;
 
 
-    if(request.body.sort_value == undefined) {
-      request.session.sort = 'name'
+    if(request.body.sort_value==undefined){
+        if(request.session.sort==undefined){
+            request.session.sort = "name"
+        }
     }else {
-      request.session.sort = request.body.sort_value
+        request.session.sort = request.body.sort_value
     }
 
     var empty_field = server_function.check_for_empty_fields(input_name, input_pass);
