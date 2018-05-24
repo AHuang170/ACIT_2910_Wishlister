@@ -36,7 +36,7 @@ h2 {
 .btn{
     background-color: lightgray;
     border: none;
-    border-radius: 12px;
+    /* border-radius: 12px; */
     padding: 7px 20px;
     text-align: center;
     text-decoration: none;
@@ -276,6 +276,7 @@ header {
 	margin-top:-4px;
 	margin-left:10px;
 	width:29%;
+	position: absolute;
 }
 
 #search-box {
@@ -336,17 +337,6 @@ header {
 	max-height:250px;
 	float: left;
 	height:auto;
-}
-
-.wishThumbOld{
-	top:30px;
-	left:175px;
-	margin:5px;
-	position:absolute;
-	width:auto;
-	height:70px;
-	border: 1px solid black;
-
 }
 
 .wishlistlogo{
@@ -418,6 +408,11 @@ header {
     margin: auto;
 }
 
+#sort{
+	float: right;
+	margin-top:-70px;
+}
+
 /* ---------------------------------- Grid ---------------------------------- */
 .wrapper {
 	position:absolute;
@@ -460,6 +455,7 @@ header {
 	grid-column: 3 / 5;
 	grid-row: 1 / 5;
 	padding:15px;
+	z-index: 15;
 }
 
 @media only screen and (max-width: 800px) {

@@ -1,6 +1,9 @@
 {
-  "name": "acit_2520_project-aperture",
+  "name": "wishlister",
   "version": "1.0.0",
+  "engines": {
+    "node": "v9.11.1"
+  },
   "description": "Web Dev project",
   "main": "server.js",
   "scripts": {
@@ -23,6 +26,7 @@
     "dotenv": "^5.0.1",
     "express": "^4.16.2",
     "express-handlebars": "^3.0.0",
+    "foobar": "^1.1.0",
     "handlebars": "^4.0.11",
     "hbs": "^4.0.1",
     "jsdoc": "^3.5.5",
