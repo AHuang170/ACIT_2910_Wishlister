@@ -78,13 +78,13 @@ hbs.registerHelper('apps', (list) => {
     for (var item in titleList) {
         if (titleList[item][2] === 'Discount 0%') {
             bg_style_class = 'game shadow';
-            // out = `${out}<div class='game shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
+            // out = `${out}<div class='game shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
         } else {
             bg_style_class = 'game_sale shadow';
-            // out = `${out}<div class='game_sale shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
+            // out = `${out}<div class='game_sale shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
         }
-        // out = `${out}<div class='${bg_style_class}' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}_logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
-        out = `${out}<div class='${bg_style_class}' id='${titleList[item][4]}' >${titleList[item][3]}<br>${titleList[item][0]}<br>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}_logo.png'></img><br>${titleList[item][2]}<div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
+        // out = `${out}<div class='${bg_style_class}' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
+        out = `${out}<div class='${bg_style_class}' id='${titleList[item][4]}' >${titleList[item][3]}<br>${titleList[item][0]}<br>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}logo.png'></img><br>${titleList[item][2]}<div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
     }
     return out;
 });
@@ -174,7 +174,7 @@ app.post('/', (request, response) => {
                 var initial_price = parseInt(result.initial);
                 var disct_percentage = parseInt(result.discount_percent);
                 var current_price = `$${server_function.get_final_price(initial_price, disct_percentage)}`;
-                var store_logo = `${result.store}_logo.png`;
+                var storelogo = `${result.store}logo.png`;
                 request.session.fetchedGame = result.name;
                 response.render('index.hbs', {
                     gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
@@ -186,7 +186,7 @@ app.post('/', (request, response) => {
                     discount: `Discount ${disct_percentage}%`,
                     displayDetails: true,
                     gameThumb: `<img id=\"gameThumb\" class=\"shadow\" src=\"${result.steam_thumb}\" />`,
-                    store: `<img class='wishlistlogo' src='${store_logo}'></img>`,
+                    store: `<img class='wishlistlogo' src='${storelogo}'></img>`,
                     details: 'Game Details'
                 });
             }).catch((error) => {
@@ -249,7 +249,7 @@ app.get('/fetchDetails', (request, response) => {
                 var disct_percentage = parseInt(result.discount_percent);
                 var final_price = server_function.get_final_price(initial_price, disct_percentage);
                 var current_price = `$${final_price}`;
-                var store_logo = `${result.store}_logo.png`;
+                var storelogo = `${result.store}logo.png`;
                 request.session.fetchedGame = result.name;
                 response.render('index.hbs', {
                         gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
@@ -263,7 +263,7 @@ app.get('/fetchDetails', (request, response) => {
                         displayDetails: true,
                         gameThumb: `<img id=\"gameThumb\" class=\"shadow\" src=\"${result.steam_thumb}\" />`,
                         details: 'Game Details',
-                        store: `<img class='wishlistlogo' src='${store_logo}'></img>`
+                        store: `<img class='wishlistlogo' src='${storelogo}'></img>`
                     });
         }).catch((error) => {
             console.log(error);
