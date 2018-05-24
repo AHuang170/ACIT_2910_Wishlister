@@ -14,12 +14,13 @@ const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const subsearch = require('subsequence-search');
 const bcrypt = require('bcrypt');
-const serverPort = 8080;
+const serverPort = (process.env.PORT || 8080);
 const math = require('mathjs');
 const request_module = require('request');
 const path = require('path');
 const hbsMailer = require('nodemailer-express-handlebars')
 const nodemailer = require('nodemailer');
+
 
 
 /**
@@ -141,32 +142,40 @@ app.get('/', (request, response) => {
  * @route {POST} /
  */
 app.post('/', (request, response) => {
+    var target_game_name = request.body.game;
     if(request.body.sort_value==undefined){
         if(request.session.sort==undefined){
             request.session.sort = "name"
         }
     }else {
-        request.session.sort = request.body.sort_value
+        request.session.sort = request.body.sort_value;
+        target_game_name = request.session.fetchedGame;
+
     }
-    if (request.body.game == '' | request.body.game == undefined) {
+    if (target_game_name == '' | target_game_name == undefined) {
+        request.session.fetchedGame = undefined;
+        var test = request.session.sort;
         response.render('index.hbs', {
             gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
             year: new Date().getFullYear(),
             loggedIn: request.session.loggedIn,
-            userName: request.session.userName
+            userName: request.session.userName,
+            details: 'Game Search'
         })
     } else {
         var index = _.findIndex(gameobj['applist'].apps, function(o) {
-            return o.name == request.body.game;
+            return o.name == target_game_name;
         });
 
         if (index != -1) {
             var appid = gameobj['applist'].apps[index].appid.toString();
             request.session.appid = appid;
-            steam_function.steam(appid).then((result) => {
-                var initial_price = parseInt(result.price_overview.initial);
-                var disct_percentage = parseInt(result.price_overview.discount_percent);
+            steam_function.get_game_object(appid).then((result) => {
+                var initial_price = parseInt(result.initial);
+                var disct_percentage = parseInt(result.discount_percent);
                 var current_price = `$${server_function.get_final_price(initial_price, disct_percentage)}`;
+                var store_logo = `${result.store}_logo.png`;
+                request.session.fetchedGame = result.name;
                 response.render('index.hbs', {
                     gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
                     year: new Date().getFullYear(),
@@ -176,7 +185,8 @@ app.post('/', (request, response) => {
                     price: `Current Price: ${current_price}`,
                     discount: `Discount ${disct_percentage}%`,
                     displayDetails: true,
-                    gameThumb: `<img id=\"gameThumb\" class=\"shadow\" src=\"${result.header_image}\" />`,
+                    gameThumb: `<img id=\"gameThumb\" class=\"shadow\" src=\"${result.steam_thumb}\" />`,
+                    store: `<img class='wishlistlogo' src='${store_logo}'></img>`,
                     details: 'Game Details'
                 });
             }).catch((error) => {
@@ -240,7 +250,7 @@ app.get('/fetchDetails', (request, response) => {
                 var final_price = server_function.get_final_price(initial_price, disct_percentage);
                 var current_price = `$${final_price}`;
                 var store_logo = `${result.store}_logo.png`;
-
+                request.session.fetchedGame = result.name;
                 response.render('index.hbs', {
                         gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
                         year: new Date().getFullYear(),
@@ -261,6 +271,9 @@ app.get('/fetchDetails', (request, response) => {
     }
 });
 
+
+
+
 /**
  * Authorize users through the login panel on the home page. Passwords are
  * hashed and stored in teh MySQL database
@@ -276,6 +289,9 @@ app.post('/loginAuth', (request, response) => {
 
     // var query = `SELECT * FROM users WHERE username = '${input_name}'`;
 
+    request.session.sort = 'sale'
+
+
 
     if(request.body.sort_value==undefined){
         if(request.session.sort==undefined){
@@ -284,7 +300,6 @@ app.post('/loginAuth', (request, response) => {
     }else {
         request.session.sort = request.body.sort_value
     }
-
     var empty_field = server_function.check_for_empty_fields(input_name, input_pass);
 
     if(request.body['g-recaptcha-response'] === undefined || request.body['g-recaptcha-response'] === '' || request.body['g-recaptcha-response'] === null) {
@@ -620,14 +635,14 @@ app.post('/passwordRecovery', (request, response) => {
                     };
 
                     transporter.use('compile', hbsMailer(handlebarsOptions));
-
+                    var linkUrl = request.protocol + '://' + request.get('host');
                     var mailOptions = {
                         from: email,
                         to: recovery_email,
                         template: 'reset-password-email',
                         subject: 'Password Recovery for Wishlister',
                         context: {
-                            url: 'http://localhost:8080/passwordRecoveryEntry?id=' + uid + '?token=' + token,
+                            url: linkUrl+'/passwordRecoveryEntry?id=' + uid + '?token=' + token,
                             name: userName
                         }
                     };
@@ -764,6 +779,6 @@ app.use((request, response) => {
 /**
  * Listen on port 8080
  */
-app.listen(8080, () => {
+app.listen((process.env.PORT || 8080), () => {
     console.log(`Server is up on the port ${serverPort}`);
 });

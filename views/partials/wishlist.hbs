@@ -1,13 +1,19 @@
 <div class="wishlist">
-  <h1>Your Wishlist</h1><br>
-  <h2>Sory by:</h2><br>
-  <form action="/" method="post">
-    <select name="sort_value" id="sort_value">
+  <h1>Your Wishlist</h1>
+  {{#if loggedIn}}
+  <div id='sort'>
+    <form action="/" method="post">
+    <select name="sort_value" onchange='this.form.submit()' id="sort_value">
+        <option value="" selected disabled hidden>Sort Wishlist by:</option>
       <option value="name">Name</option>
       <option value="price">Price</option>
       <option value="sale">Sale</option>
-    <input id="sort-btn" class="btn btn-outline-secondary" type="submit" value="Sort">
-  </form>
+  </select>
+    <noscript><input  type="submit" value="Sort"></noscript>
+    <!-- id="sort-btn" class="btn btn-outline-secondary" -->
+    </form>
+</div>
+  {{/if}}
   <div id="err">{{empty}}</div>
   {{#apps this}}
     {{gamelist}}
