@@ -195,7 +195,7 @@ app.post('/', (request, response) => {
             var result = subsearch.search({
                 rank: subsearch.transforms.rank('name'),
                 noHighlight: subsearch.transforms.noHighlight,
-            }, dataList, request.body.game);
+            }, dataList, target_game_name);
             var gameList = [];
             var maxItem = result.data.length;
 
