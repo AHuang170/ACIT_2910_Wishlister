@@ -421,6 +421,7 @@ app.get('/removeFromWishlist', (request, response) => {
         return steam_function.game_loop(queryResult);
     }).then((result) => {
         request.session.wishlist = result;
+        request.session.fetchedGame = undefined;
         response.render('index.hbs', {
             gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
             year: new Date().getFullYear(),
@@ -563,7 +564,7 @@ app.post('/addToWishlist', (request, response) => {
                 return steam_function.game_loop(queryResult);
             }).then((result) => {
                 request.session.wishlist = result;
-
+                request.session.fetchedGame = undefined;
                 response.render('index.hbs', {
                     gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
                     year: new Date().getFullYear(),
