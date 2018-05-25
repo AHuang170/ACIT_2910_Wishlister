@@ -169,7 +169,6 @@ function compare_prices(steam_obj, gog_obj) {
         var gog_price = parseInt(gog_obj.initial) * (1 - (gog_obj.discount_percent / 100));
         var steam_price = parseInt(steam_obj.initial) * (1 - (steam_obj.discount_percent / 100));
         if (gog_price < steam_price) {
-            console.log(gog_obj)
             winner = Object.assign({}, gog_obj)
             winner['store'] = 'gog'
             winner['steam_thumb'] = steam_obj.steam_thumb
@@ -179,12 +178,14 @@ function compare_prices(steam_obj, gog_obj) {
         } else {
             winner = Object.assign({}, steam_obj)
             winner['store'] = 'steam'
+            winner['link_url'] = `https://store.steampowered.com/app/${steam_obj.appid}`
         }
     } else {
         winner = Object.assign({}, steam_obj)
         winner['store'] = 'steam'
         winner['link_url'] = `https://store.steampowered.com/app/${steam_obj.appid}`
     }
+    // console.log(winner)
     return winner
 }
 
