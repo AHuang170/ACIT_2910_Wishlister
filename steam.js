@@ -89,6 +89,7 @@ var get_game_object = (app_id) => {
         steam(app_id).then((result) => {
             game_name = result.name;
             steam_object = Object.assign({}, extract_steam_data(result));
+            steam_object.appid = app_id;
             return gog.gog_api([game_name])
         }).then((result) => {
             var isolated_obj = gog.isolate_game_obj(game_name, result);

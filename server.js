@@ -777,5 +777,5 @@ app.use((request, response) => {
  * Listen on port 8080
  */
 app.listen((process.env.PORT || 8080), () => {
-    console.log(`Server is up on the port ${serverPort}`);
+    console.log(`Server is up on the port ${process.env.PORT || 8080}`);
 });
