@@ -78,13 +78,10 @@ hbs.registerHelper('apps', (list) => {
     for (var item in titleList) {
         if (titleList[item][2] === 'Discount 0%') {
             bg_style_class = 'game shadow';
-            // out = `${out}<div class='game shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
         } else {
             bg_style_class = 'game_sale shadow';
-            // out = `${out}<div class='game_sale shadow' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
         }
-        // out = `${out}<div class='${bg_style_class}' id='${titleList[item][4]}' >${titleList[item][3]}<p>${titleList[item][0]}</p><p>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}logo.png'></img></p><p>${titleList[item][2]}</p><div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
-        out = `${out}<div class='${bg_style_class}' id='${titleList[item][4]}' >${titleList[item][3]}<br>${titleList[item][0]}<br>${titleList[item][1]}<img class='wishlistlogo' src='${titleList[item][5]}logo.png'></img><br>${titleList[item][2]}<div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})' >x</div></div>`;
+        out = `${out}<div class='${bg_style_class}' id='${titleList[item][4]}'>${titleList[item][3]}<br>${titleList[item][0]}<br>${titleList[item][1]}<a href='${titleList[item][6]}'><img class='wishlistlogo' src='${titleList[item][5]}logo.png'></a><br>${titleList[item][2]}<div class='deleteButton' onclick='deleteMessage(${titleList[item][4]})'>x</div></div>`;
     }
     return out;
 });
@@ -198,7 +195,7 @@ app.post('/', (request, response) => {
             var result = subsearch.search({
                 rank: subsearch.transforms.rank('name'),
                 noHighlight: subsearch.transforms.noHighlight,
-            }, dataList, request.body.game);
+            }, dataList, target_game_name);
             var gameList = [];
             var maxItem = result.data.length;
 
@@ -424,6 +421,7 @@ app.get('/removeFromWishlist', (request, response) => {
         return steam_function.game_loop(queryResult);
     }).then((result) => {
         request.session.wishlist = result;
+        request.session.fetchedGame = undefined;
         response.render('index.hbs', {
             gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
             year: new Date().getFullYear(),
@@ -566,7 +564,7 @@ app.post('/addToWishlist', (request, response) => {
                 return steam_function.game_loop(queryResult);
             }).then((result) => {
                 request.session.wishlist = result;
-
+                request.session.fetchedGame = undefined;
                 response.render('index.hbs', {
                     gameList: server_function.sort_wishlist(request.session.sort, request.session.wishlist),
                     year: new Date().getFullYear(),
@@ -780,5 +778,5 @@ app.use((request, response) => {
  * Listen on port 8080
  */
 app.listen((process.env.PORT || 8080), () => {
-    console.log(`Server is up on the port ${serverPort}`);
+    console.log(`Server is up on the port ${process.env.PORT || 8080}`);
 });

@@ -106,7 +106,8 @@ var mock_steam_compare_obj = {
 var mock_gog_compare_obj = {
     initial: "1300",
     discount_percent: 10,
-    name: "The Witcher: Enhanced Edition"
+    name: "The Witcher: Enhanced Edition",
+    url: "/game/the_witcher"
 };
 
 var mock_gog_game_list = [mock_gog_obj_1, mock_gog_obj_2];
@@ -395,6 +396,7 @@ describe('GOG Tests', () => {
                 initial: 1289,
                 discount_percent: 0,
                 name: "The Witcher: Enhanced Edition",
+                url: "/game/the_witcher"
             })
         })
 })
