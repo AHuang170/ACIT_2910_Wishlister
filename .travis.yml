@@ -1,3 +1,10 @@
 language: node_js
 node_js:
- - "9"
+- '9'
+deploy:
+  provider: heroku
+  app: wishlister-tyler
+  api_key:
+    secure: PQ3VnA7C/KPaHvJ7VDdpMna5fn0/xM3MgXnvM9GP3m9dLjnZtsgpMLQvB8dJS+k14TATxxYxQBJ457wW/c1lOTeSgX6jeNsgLK9C1bFAl9s447e7+hrCYxfJNCZxzNdCYQRN88danEslguY3W3yqKvSp+IL0DrV5B35yFK3JltASnB9zPoqfX6d6cLFJ8a6XLJTT+JAVMMNcAJH4axhRWr/Tac5SpYb64ESzR2yYzzhnzj8O1FwYQ5U9oE/+u1lDDh2e1quvHy8gwz3hNEUAHBJwreqhcziM2EGsBwA5ATT+T4BHvDf0VOHUMvDJO6jwKCxOBGwPNauGHfHrc0y/CIiUJAr9rjlX9qHSoSHvD+FnSy9dk9t66WE00GETd7sUPgcgURxXv4PwIgA5bQLsDHJ9EUdzjzoN6if5DHroHZ+jTFTR28QEnQTT7UvIqqanb4LLn6BAU0mPHcggZPZWs8Rj/YsYEHWkic/HvXFH32rzrnSuQAht+ZAce9cD//QGAalK7zLuyHR4WoDsfmJXZksamFeP+CpzAQJH24Ak57NjZfHL4OJcCF4IaYPE+JNnneyQ7GQVYf1NlVNS4VYwal1WJIkSlQSmHboRRELJ3iV+SsbiighJGxzrB9YSaNzFIxxC31sySZ/ClY4xYZ7L3D8zsj1PzvTtlcUc9AS5PgQ=
+  on:
+    node: 9.11.1

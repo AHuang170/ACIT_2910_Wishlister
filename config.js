@@ -5,7 +5,7 @@ var connection = mysql.createConnection({
     user     : process.env.user,
     password : process.env.password,
     database : process.env.database,
-    port     : process.env.port
+    port     : 3306
 });
 
 var secretKey = process.env.secretKey;

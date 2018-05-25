@@ -176,6 +176,11 @@ var sort_by_sale = (wishlist) => {
  * @returns {array} A sorted array of wishlist information arrays
  */
 var sort_wishlist = (type, wishlist) => {
+    if (wishlist == undefined)
+    {
+        return [];
+    }
+
     if (type == 'name') {
         return sort_by_name(wishlist)
     } else if (type == 'price') {

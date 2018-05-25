@@ -133,11 +133,13 @@ function process_object(input_object) {
     var steam_name = `${input_object.name}`;
     var steam_price = `Current Price: $${current_price.toString()}`;
     var steam_discount = `Discount ${disct_percentage}%`;
-    var steam_thumb = `<img class=\"wishThumb shadow\" src=\"${input_object.steam_thumb}\" />`;
     var appid = input_object.appid;
     var best_deal = input_object.store;
-    return ([steam_name, steam_price, steam_discount, steam_thumb, appid, best_deal]);
+    var steam_thumb = `<img class=\"wishThumb shadow\" src=\"${input_object.steam_thumb}\" />`;
+    var link_url = input_object.link_url
+    return ([steam_name, steam_price, steam_discount, steam_thumb, appid, best_deal, link_url]);
 }
+
 
 /**
  * Returns the discounted game price
@@ -162,12 +164,15 @@ function compare_prices(steam_obj, gog_obj) {
     // console.log(`>>>>>GOG:\n${JSON.stringify(gog_obj, undefined, 2)}`)
     var winner = '';
     if (gog_obj != undefined) {
+
         var gog_price = parseInt(gog_obj.initial) * (1 - (gog_obj.discount_percent / 100));
         var steam_price = parseInt(steam_obj.initial) * (1 - (steam_obj.discount_percent / 100));
         if (gog_price < steam_price) {
+            console.log(gog_obj)
             winner = Object.assign({}, gog_obj)
             winner['store'] = 'gog'
             winner['steam_thumb'] = steam_obj.steam_thumb
+            winner['link_url'] = `https://www.gog.com${gog_obj.url}`
             // console.log(winner)
             winner['appid'] = steam_obj.appid
         } else {
@@ -177,6 +182,7 @@ function compare_prices(steam_obj, gog_obj) {
     } else {
         winner = Object.assign({}, steam_obj)
         winner['store'] = 'steam'
+        winner['link_url'] = `https://store.steampowered.com/app/${steam_obj.appid}`
     }
     return winner
 }

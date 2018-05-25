@@ -68,7 +68,8 @@ var extract_data = (raw_data) => {
     return {
         name: raw_data.title,
         initial: parseFloat(raw_data.price.baseAmount) * 100,
-        discount_percent: raw_data.price.discountPercentage
+        discount_percent: raw_data.price.discountPercentage,
+        url: raw_data.url
     }
 }
 
