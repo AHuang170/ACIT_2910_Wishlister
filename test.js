@@ -225,6 +225,7 @@ describe("Steam Tests", () => {
                 "Discount 0%",
                 "<img class=\"wishThumb shadow\" src=\"img_url\" />",
                 1111,
+                undefined,
                 undefined
             ])
         }),
